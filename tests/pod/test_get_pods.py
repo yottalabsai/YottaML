@@ -96,7 +96,7 @@ def main():
     config_logging(logging, logging.DEBUG)
 
     # Get API key from Yottalabs Console
-    api_key = ""
+    api_key = "GUGDvaDscOSb1vDbahv2G0edyaqs5uqdQWydNYYJobIXVZrMb88NNzTq5JwMpCkR"
 
     # Initialize client with test environment
     client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai")

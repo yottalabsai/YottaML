@@ -49,7 +49,7 @@ Please find `examples` folder to check for more endpoints.
     ```ini
     # examples/config.ini
     [keys]
-    api_key=abc123456
+    api_key=GUGDvaDscOSb1vDbahv2G0edyaqs5uqdQWydNYYJobIXVZrMb88NNzTq5JwMpCkR
     ```
 
 ### Base URL

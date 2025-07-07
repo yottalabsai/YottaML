@@ -43,7 +43,7 @@ jobs:
     # install build
     - name: Install pypa/build
       run: |
-        python3 -m pip install build --user
+        python3 -m pip install setuptools wheel build --user
 
     # build
     - name: Build a binary wheel and a source tarball
