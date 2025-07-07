@@ -1,0 +1,65 @@
+name: Publish Python distributions to PyPI
+
+on:
+  # manually
+  workflow_dispatch:
+
+#  push:
+#    # push tags as v*.*.*
+#    tags:
+#      - "v*.*.*"
+#
+#    # push to main branch
+#    branches:
+#      - main
+
+jobs:
+  build-n-publish:
+    name: Build and publish distribution 📦 to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    # clone
+    - uses: actions/checkout@v4
+
+    # python version
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    # cache
+    - uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('requirements.txt') }}
+
+    # install dependencies
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # install build
+    - name: Install pypa/build
+      run: |
+        python3 -m pip install build --user
+
+    # build
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python3 -m build --sdist --wheel --outdir dist/ .
+
+    # publish
+    - name: Publish distribution 📦 to PyPI
+#      if: startsWith(github.ref, 'refs/tags/')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+    # clean up
+    - name: Post release cleaning
+      run: |
+        python3 setup.py clean --all
+        rm dist/*
