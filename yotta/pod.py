@@ -20,7 +20,7 @@ class PodApi(API):
         """
 
         url_path = "/openapi/v1/pods/list"
-        return self.http_post(url_path, payload=None)
+        return self.http_get(url_path, payload=None)
 
     def delete_pod(self, pod_id: int):
         """Delete Pod

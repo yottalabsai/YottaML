@@ -19,3 +19,5 @@ venv/
 docs/build/
 
 examples/*.ini
+yottactl.egg-info
+

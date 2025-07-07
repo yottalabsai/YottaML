@@ -4,10 +4,10 @@ from json import JSONDecodeError
 
 import requests
 
+from yotta.__version__ import __version__
 from yotta.error import ClientError, ServerError
 from yotta.lib.utils import cleanNoneValue
 from yotta.lib.utils import encoded_string
-from yotta.__version__ import __version__
 
 
 class API(object):
@@ -65,12 +65,11 @@ class API(object):
 
         response = self.session.get(url=url, **params)
 
-        self._logger.debug("raw response from server:" + response.text)
+        self._logger.debug("http_get raw response from server:" + response.text)
         self._handle_exception(response)
         return response.json()
 
     def http_post(self, url_path, payload=None):
-        response = requests.get()
         if payload is None:
             payload = {}
 
@@ -85,7 +84,7 @@ class API(object):
 
         response = self.session.post(url=url, json=payload, **params)
 
-        self._logger.debug("raw response from server:" + response.text)
+        self._logger.debug("http_post raw response from server:" + response.text)
         self._handle_exception(response)
         return response.json()
 
@@ -105,7 +104,7 @@ class API(object):
 
         response = self.session.delete(url=url, **params)
 
-        self._logger.debug("raw response from server:" + response.text)
+        self._logger.debug("http_delete raw response from server:" + response.text)
         self._handle_exception(response)
         return response.json()
 
