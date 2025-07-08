@@ -1,11 +1,12 @@
-# Yottalabs Public API Connector Python
+# Yottalabs Public API Connector (Python)
 
-This is a lightweight library that works as a connector to Yottalabs public API
+A lightweight Python library for connecting to the [Yottalabs public API](https://api.yottalabs.ai).  
+Easily interact with `/openapi/v1/*` endpoints, with support for custom base URLs, request timeouts, HTTP proxies, and more.
 
-- Supported APIs:
-    - `/openapi/v1/*`
-- Inclusion of examples
-- Customizable base URL, request timeout and HTTP proxy
+
+## Requirements
+
+- Python 3.8 or higher
 
 ## Installation
 
@@ -13,11 +14,7 @@ This is a lightweight library that works as a connector to Yottalabs public API
 pip install yottactl
 ```
 
-[//]: # (## Documentation)
-
-## RESTful APIs
-
-Usage examples:
+## Quickstart
 
 ```python
 from yotta.pod import PodApi
@@ -25,16 +22,12 @@ from yotta.pod import PodApi
 # API key is required for user data endpoints
 client = PodApi(api_key='<api_key>')
 
-# Post a new order
 params = {
     "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025050802",
     "gpu_type": "NVIDIA_L4_24G",
     "gpu_count": 1,
     "expose": [
-        {
-            "port": 22,
-            "protocol": "SSH"
-        }
+        {"port": 22, "protocol": "SSH"}
     ]
 }
 
@@ -42,50 +35,52 @@ response = client.new_pod(**params)
 print(response)
 ```
 
-Please find `examples` folder to check for more endpoints.
+See the [`examples/`](examples/) folder for more usage examples.
 
-- In order to set your API for use of the examples, create a file `examples/config.ini` with your keys.
-- Eg:
-    ```ini
-    # examples/config.ini
-    [keys]
-    api_key=GUGDvaDscOSb1vDbahv2G0edyaqs5uqdQWydNYYJobIXVZrMb88NNzTq5JwMpCkR
-    ```
+## Configuration
 
-### Base URL
+To use the example scripts, create a `examples/config.ini` file with your API key:
 
-If `base_url` is not provided, it defaults to `https://api.yottalabs.ai`.
-
-### Timeout
-
-`timeout` is available to be assigned with the number of seconds you find most appropriate to wait for a server
-response.<br/>
-Please remember the value as it won't be shown in error message _no bytes have been received on the underlying socket
-for timeout seconds_.<br/>
-By default, `timeout` is None. Hence, requests do not time out.
-
-```python
-from yotta.pod import PodApi
-
-client = PodApi(timeout=1)
+```ini
+[keys]
+api_key=YOUR_API_KEY_HERE
 ```
 
-### Display logs
+## Customization
 
-Setting the log level to `DEBUG` will log the request URL, payload and response text.
+- **Base URL:**  
+  If not provided, defaults to `https://api.yottalabs.ai`.
 
-### Error
+- **Timeout:**  
+  Set the `timeout` parameter (in seconds) to control how long to wait for a server response.  
+  By default, requests do not time out.
 
-There are 2 types of error returned from the library:
+  ```python
+  client = PodApi(timeout=1)
+  ```
 
-- `yotta.error.ClientError`
-    - This is thrown when server returns `4XX`, it's an issue from client side.
-    - It has 5 properties:
-        - `status_code` - HTTP status code
-        - `error_code` - Server's error code, e.g. `10001`
-        - `error_message` - Server's error message, e.g. `Unknown order sent.`
-        - `header` - Full response header.
-        - `error_data`* - Additional detailed data which supplements the `error_message`.
-            - **Only applicable on select endpoints, eg. `cancelReplace`*
-- `yotta.error.ServerError`
-    - This is thrown when server returns `5XX`, it's an issue from server side.
+- **Logging:**  
+  Set the log level to `DEBUG` to log request URLs, payloads, and responses.
+
+## Error Handling
+
+Two types of errors are raised:
+
+- `yotta.error.ClientError`  
+  Raised for 4XX client errors. Properties:
+  - `status_code`: HTTP status code
+  - `error_code`: Server error code (if available)
+  - `error_message`: Server error message
+  - `header`: Full response headers
+  - `error_data`: Additional data (if provided)
+
+- `yotta.error.ServerError`  
+  Raised for 5XX server errors.
+
+## Contributing
+
+Contributions are welcome! Please open issues or pull requests.
+
+## License
+
+[MIT](LICENSE)
