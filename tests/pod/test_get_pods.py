@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+from http.cookiejar import debug
 
 from yotta.error import ClientError
 from yotta.lib.utils import config_logging
@@ -99,7 +100,7 @@ def main():
     api_key = "GUGDvaDscOSb1vDbahv2G0edyaqs5uqdQWydNYYJobIXVZrMb88NNzTq5JwMpCkR"
 
     # Initialize client with test environment
-    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai")
+    client = PodApi(api_key, debug=True)
 
     try:
         # Get all pods

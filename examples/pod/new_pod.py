@@ -51,7 +51,7 @@ def main():
     api_key = get_api_key()
 
     # Initialize client with test environment
-    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai")
+    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     # Example 1: Basic GPU Pod with SSH
     basic_config = {

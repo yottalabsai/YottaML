@@ -100,7 +100,7 @@ def main():
     api_key = get_api_key()
 
     # Initialize client with test environment
-    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai")
+    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     try:
         # Get all pods

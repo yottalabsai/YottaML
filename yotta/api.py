@@ -17,7 +17,7 @@ class API(object):
             base_url=None,
             timeout=None,
             proxies=None,
-            show_header=False,
+            debug=False,
             private_key=None,
             private_key_pass=None,
     ):
@@ -27,8 +27,8 @@ class API(object):
             self.base_url = "https://api.yottalabs.ai"
 
         self.timeout = timeout
-        self.proxies = None
-        self.show_header = False
+        self.proxies = proxies
+        self.debug = debug
         self.private_key = private_key
         self.private_key_pass = private_key_pass
         self.session = requests.Session()
@@ -39,9 +39,6 @@ class API(object):
                 "X-Api-Key": f"{api_key}",
             }
         )
-
-        if show_header is True:
-            self.show_header = True
 
         if type(proxies) is dict:
             self.proxies = proxies
@@ -54,7 +51,7 @@ class API(object):
             payload = {}
 
         url = self.base_url + url_path
-        self._logger.debug("url: " + url)
+
         params = cleanNoneValue(
             {
                 "params": self._prepare_params(payload),
@@ -63,9 +60,16 @@ class API(object):
             }
         )
 
+        if self.debug:
+            self._logger.debug("url: " + url)
+            self._logger.debug("payload: " + json.dumps(payload))
+            self._logger.debug("params: " + json.dumps(params))
+
         response = self.session.get(url=url, **params)
 
-        self._logger.debug("http_get raw response from server:" + response.text)
+        if self.debug:
+            self._logger.debug("http_get raw response from server:" + response.text)
+
         self._handle_exception(response)
         return response.json()
 
@@ -74,7 +78,7 @@ class API(object):
             payload = {}
 
         url = self.base_url + url_path
-        self._logger.debug("url: " + url)
+
         params = cleanNoneValue(
             {
                 "timeout": self.timeout,
@@ -82,9 +86,16 @@ class API(object):
             }
         )
 
+        if self.debug:
+            self._logger.debug("url: " + url)
+            self._logger.debug("payload: " + json.dumps(payload))
+            self._logger.debug("params: " + json.dumps(params))
+
         response = self.session.post(url=url, json=payload, **params)
 
-        self._logger.debug("http_post raw response from server:" + response.text)
+        if self.debug:
+            self._logger.debug("http_post raw response from server:" + response.text)
+
         self._handle_exception(response)
         return response.json()
 
@@ -93,7 +104,7 @@ class API(object):
             payload = {}
 
         url = self.base_url + url_path
-        self._logger.debug("url: " + url)
+
         params = cleanNoneValue(
             {
                 "params": self._prepare_params(payload),
@@ -102,9 +113,16 @@ class API(object):
             }
         )
 
+        if self.debug:
+            self._logger.debug("url: " + url)
+            self._logger.debug("payload: " + json.dumps(payload))
+            self._logger.debug("params: " + json.dumps(params))
+
         response = self.session.delete(url=url, **params)
 
-        self._logger.debug("http_delete raw response from server:" + response.text)
+        if self.debug:
+            self._logger.debug("http_delete raw response from server:" + response.text)
+
         self._handle_exception(response)
         return response.json()
 
