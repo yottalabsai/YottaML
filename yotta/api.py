@@ -134,6 +134,6 @@ class API(object):
             if "data" in err:
                 error_data = err["data"]
             raise ClientError(
-                status_code, err["code"], err["message"], response.headers, error_data
+                status_code, err.get("code"), err.get("message", response.text), response.headers, error_data
             )
         raise ServerError(status_code, response.text)
