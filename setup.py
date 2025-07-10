@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup, find_packages
 
-with open(os.path.join(os.path.dirname(__file__), "requirements.txt"), "r") as fh:
+with open(os.path.join(os.path.dirname(__file__), "requirements/requirements.txt"), "r") as fh:
     requirements = fh.readlines()
 
 NAME = "yottactl"

@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from yotta import API
+from yotta.lib.utils import check_is_positive_int
 from yotta.lib.utils import check_required_parameter
 from yotta.lib.utils import check_required_parameters
 
@@ -16,11 +17,13 @@ class PodApi(API):
 
         Args:
         Returns:
-            YottaResponse[List[PodDetail]]: List of pod details wrapped in API response
+            Json: List of pod details
         """
 
+        payload = {**kwargs}
+
         url_path = "/openapi/v1/pods/list"
-        return self.http_get(url_path, payload=None)
+        return self.http_get(url_path, payload=payload)
 
     def delete_pod(self, pod_id: int):
         """Delete Pod
@@ -28,12 +31,16 @@ class PodApi(API):
         DELETE /openapi/v1/pods/{pod_id}
 
         Args:
-            pod_id (int): ID of the pod to delete
+            pod_id (int): ID of the pod to delete. Must be a positive integer.
 
         Returns:
-            YottaResponse[bool]: Response indicating success of deletion
+            Json: Response indicating success of deletion
+
+        Raises:
+            ValueError: If pod_id is not a valid positive integer
         """
         check_required_parameter(pod_id, "pod_id")
+        check_is_positive_int(pod_id, "pod_id")
 
         url_path = f"/openapi/v1/pods/{pod_id}"
         return self.http_delete(url_path, payload=None)
@@ -82,7 +89,7 @@ class PodApi(API):
             expose (List[dict], optional): List of ports to expose. Each dict should have 'port' and 'protocol'
 
         Returns:
-            YottaResponse[int]: Response containing the created pod ID
+            Json: Response containing the created pod ID
         """
         # Required parameters validation
         check_required_parameters([

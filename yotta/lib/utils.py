@@ -27,8 +27,8 @@ def check_required_parameter(value, name):
 def check_required_parameters(params):
     """Validate multiple parameters
     params = [
-        ['btcusdt', 'symbol'],
-        [10, 'price']
+        ['value1', 'name1'],
+        ['value2', 'name2']
     ]
 
     """
@@ -107,3 +107,28 @@ def parse_proxies(proxies: dict):
             else None
         ),
     }
+
+
+def check_is_positive_int(value, name: str):
+    """Validate param type and value.
+    
+    Args:
+        value: The param to validate
+        
+    Raises:
+        ValueError: If param is not a valid integer or is negative
+    """
+    if not isinstance(value, (int, str)) or isinstance(value, bool):
+        raise ValueError("%s must be a positive integer" % name)
+
+    # Convert string to int if needed
+    if isinstance(value, str):
+        try:
+            value = int(value)
+        except ValueError:
+            raise ValueError("%s must be a positive integer" % name)
+
+    if value <= 0:
+        raise ValueError("%s must be a positive integer" % name)
+
+    return

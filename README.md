@@ -62,6 +62,10 @@ api_key=YOUR_API_KEY_HERE
 - **Logging:**  
   Set the log level to `DEBUG` to log request URLs, payloads, and responses.
 
+  ```python
+  client = PodApi(debug=True)
+  ```
+
 ## Error Handling
 
 Two types of errors are raised:

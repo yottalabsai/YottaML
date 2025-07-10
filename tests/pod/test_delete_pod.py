@@ -1,0 +1,135 @@
+from unittest.mock import patch
+
+import pytest
+
+from yotta.error import ClientError, ParameterRequiredError
+from yotta.pod import PodApi
+
+# Mock response data
+MOCK_SUCCESS_RESPONSE = {
+    "code": 10000,
+    "message": "success",
+    "data": True
+}
+
+MOCK_ERROR_RESPONSE = {
+    "code": 40001,
+    "message": "Pod not found",
+    "data": None
+}
+
+
+@pytest.fixture
+def pod_api():
+    """Create a PodApi instance with a mock API key"""
+    return PodApi(api_key="test_api_key", base_url="https://api.test.yottalabs.ai")
+
+
+def test_delete_pod_success(pod_api):
+    """Test successful pod deletion"""
+    pod_id = 123456789
+
+    with patch.object(pod_api, 'http_delete', return_value=MOCK_SUCCESS_RESPONSE) as mock_delete:
+        response = pod_api.delete_pod(pod_id=pod_id)
+
+        assert response == MOCK_SUCCESS_RESPONSE
+        mock_delete.assert_called_once_with(f"/openapi/v1/pods/{pod_id}", payload=None)
+
+
+def test_delete_pod_success_with_string_id(pod_api):
+    """Test successful pod deletion with string ID that can be converted to int"""
+    pod_id = "123456789"
+
+    with patch.object(pod_api, 'http_delete', return_value=MOCK_SUCCESS_RESPONSE) as mock_delete:
+        response = pod_api.delete_pod(pod_id=pod_id)
+
+        assert response == MOCK_SUCCESS_RESPONSE
+        mock_delete.assert_called_once_with(f"/openapi/v1/pods/{int(pod_id)}", payload=None)
+
+
+def test_delete_pod_missing_id(pod_api):
+    """Test that deleting a pod without an ID raises an error"""
+    with pytest.raises(ParameterRequiredError) as exc_info:
+        pod_api.delete_pod(pod_id=None)
+    assert "pod_id" in str(exc_info.value)
+
+    with pytest.raises(ParameterRequiredError) as exc_info:
+        pod_api.delete_pod(pod_id="")
+    assert "pod_id" in str(exc_info.value)
+
+
+def test_delete_pod_invalid_id_type(pod_api):
+    """Test that deleting a pod with invalid ID type raises an error"""
+    invalid_ids = [
+        "abc",  # Non-numeric string
+        "123abc",  # Mixed string
+        "pod-123",  # String with special chars
+        -123,  # Negative integer
+        0,  # Zero
+        1.5,  # Float
+        True,  # Boolean
+    ]
+
+    for invalid_id in invalid_ids:
+        with pytest.raises(ValueError) as exc_info:
+            pod_api.delete_pod(pod_id=invalid_id)
+        assert "pod_id" in str(exc_info.value)
+
+    invalid_ids = [
+        [],  # List
+        {},  # Dict
+    ]
+
+    for invalid_id in invalid_ids:
+        with pytest.raises(ParameterRequiredError) as exc_info:
+            pod_api.delete_pod(pod_id=invalid_id)
+        assert "pod_id" in str(exc_info.value)
+
+
+def test_delete_pod_not_found(pod_api):
+    """Test handling of pod not found error"""
+    pod_id = 999999999
+
+    with patch.object(pod_api, 'http_delete', side_effect=ClientError(
+            status_code=404,
+            error_code=40001,
+            error_message="Pod not found",
+            header={},
+            error_data=None
+    )):
+        with pytest.raises(ClientError) as exc_info:
+            pod_api.delete_pod(pod_id=pod_id)
+
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.error_code == 40001
+        assert "Pod not found" in str(exc_info.value.error_message)
+
+
+def test_delete_pod_unauthorized(pod_api):
+    """Test handling of unauthorized deletion attempt"""
+    pod_id = 123456789
+
+    with patch.object(pod_api, 'http_delete', side_effect=ClientError(
+            status_code=403,
+            error_code=40003,
+            error_message="Unauthorized to delete pod",
+            header={},
+            error_data=None
+    )):
+        with pytest.raises(ClientError) as exc_info:
+            pod_api.delete_pod(pod_id=pod_id)
+
+        assert exc_info.value.status_code == 403
+        assert exc_info.value.error_code == 40003
+        assert "Unauthorized" in str(exc_info.value.error_message)
+
+
+def test_delete_pod_server_error(pod_api):
+    """Test handling of server errors during deletion"""
+    pod_id = 123456789
+
+    with patch.object(pod_api, 'http_delete', side_effect=Exception("Internal server error")):
+        with pytest.raises(Exception) as exc_info:
+            pod_api.delete_pod(pod_id=pod_id)
+
+        assert "Internal server error" in str(exc_info.value)
