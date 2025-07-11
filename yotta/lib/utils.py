@@ -119,16 +119,16 @@ def check_is_positive_int(value, name: str):
         ValueError: If param is not a valid integer or is negative
     """
     if not isinstance(value, (int, str)) or isinstance(value, bool):
-        raise ValueError("%s must be a positive integer" % name)
+        raise ValueError("%s must be a positive number" % name)
 
     # Convert string to int if needed
     if isinstance(value, str):
         try:
             value = int(value)
         except ValueError:
-            raise ValueError("%s must be a positive integer" % name)
+            raise ValueError("%s must be a positive number" % name)
 
     if value <= 0:
-        raise ValueError("%s must be a positive integer" % name)
+        raise ValueError("%s must be a positive number" % name)
 
     return

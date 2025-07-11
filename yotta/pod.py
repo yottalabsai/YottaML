@@ -25,13 +25,13 @@ class PodApi(API):
         url_path = "/openapi/v1/pods/list"
         return self.http_get(url_path, payload=payload)
 
-    def delete_pod(self, pod_id: int):
+    def delete_pod(self, pod_id: str):
         """Delete Pod
 
         DELETE /openapi/v1/pods/{pod_id}
 
         Args:
-            pod_id (int): ID of the pod to delete. Must be a positive integer.
+            pod_id (str): ID of the pod to delete. Must be a positive integer.
 
         Returns:
             Json: Response indicating success of deletion

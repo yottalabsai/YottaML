@@ -13,8 +13,8 @@ MOCK_SUCCESS_RESPONSE = {
 }
 
 MOCK_ERROR_RESPONSE = {
-    "code": 40001,
-    "message": "Pod not found",
+    "code": 12000,
+    "message": "Pod not exist",
     "data": None
 }
 
@@ -27,7 +27,7 @@ def pod_api():
 
 def test_delete_pod_success(pod_api):
     """Test successful pod deletion"""
-    pod_id = 123456789
+    pod_id = '123456789012345678901234567890'
 
     with patch.object(pod_api, 'http_delete', return_value=MOCK_SUCCESS_RESPONSE) as mock_delete:
         response = pod_api.delete_pod(pod_id=pod_id)
@@ -91,18 +91,18 @@ def test_delete_pod_not_found(pod_api):
     pod_id = 999999999
 
     with patch.object(pod_api, 'http_delete', side_effect=ClientError(
-            status_code=404,
-            error_code=40001,
-            error_message="Pod not found",
+            status_code=200,
+            error_code=12000,
+            error_message="Pod not exist",
             header={},
             error_data=None
     )):
         with pytest.raises(ClientError) as exc_info:
             pod_api.delete_pod(pod_id=pod_id)
 
-        assert exc_info.value.status_code == 404
-        assert exc_info.value.error_code == 40001
-        assert "Pod not found" in str(exc_info.value.error_message)
+        assert exc_info.value.status_code == 200
+        assert exc_info.value.error_code == 12000
+        assert "Pod not exist" in str(exc_info.value.error_message)
 
 
 def test_delete_pod_unauthorized(pod_api):
@@ -110,18 +110,18 @@ def test_delete_pod_unauthorized(pod_api):
     pod_id = 123456789
 
     with patch.object(pod_api, 'http_delete', side_effect=ClientError(
-            status_code=403,
-            error_code=40003,
-            error_message="Unauthorized to delete pod",
+            status_code=200,
+            error_code=10004,
+            error_message="no permissions",
             header={},
             error_data=None
     )):
         with pytest.raises(ClientError) as exc_info:
             pod_api.delete_pod(pod_id=pod_id)
 
-        assert exc_info.value.status_code == 403
-        assert exc_info.value.error_code == 40003
-        assert "Unauthorized" in str(exc_info.value.error_message)
+        assert exc_info.value.status_code == 200
+        assert exc_info.value.error_code == 10004
+        assert "no permissions" in str(exc_info.value.error_message)
 
 
 def test_delete_pod_server_error(pod_api):
