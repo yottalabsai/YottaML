@@ -71,7 +71,7 @@ class PodApi(API):
 
         Args:
             image (str): Docker image to use
-            gpu_type (str, optional): Type of GPU to use (e.g., "A100", "V100"). Defaults to None
+            gpu_type (str, optional): Type of GPU to use (e.g., "NVIDIA_GeForce_RTX_4090_24G", "NVIDIA_L4_24G").
             region (str, optional): Region where the pod will be created. Defaults to "us-west-1"
             cloud_type (str, optional): Cloud type. Defaults to "SECURE"
             pod_name (str): Name of the pod
