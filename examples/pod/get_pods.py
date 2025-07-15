@@ -4,7 +4,7 @@ import logging
 
 from examples.utils.prepare_env import get_api_key
 from yotta.error import ClientError
-from yotta.lib.utils import config_logging
+from yotta.lib.utils import config_logging, none_to_zero
 from yotta.pod import PodApi
 
 
@@ -17,8 +17,8 @@ def format_size(size_in_gb):
 
 def format_network_speed(speed_mbps):
     """Format network speed to appropriate unit"""
-    if speed_mbps >= 1000:
-        return f"{speed_mbps / 1000:.1f} Gbps"
+    if float(speed_mbps) >= 1000:
+        return f"{float(speed_mbps) / 1000:.1f} Gbps"
     return f"{speed_mbps} Mbps"
 
 
@@ -84,8 +84,8 @@ def display_pods_list(pods):
 
     # Calculate some statistics
     active_pods = sum(1 for pod in pods if pod['status'] == 'RUNNING')  # Assuming 1 is "Running"
-    total_gpus = sum(pod['gpuCount'] for pod in pods)
-    total_storage = sum(pod['containerVolumeInGb'] + pod['persistentVolumeInGb'] for pod in pods)
+    total_gpus = sum(none_to_zero(pod['gpuCount']) for pod in pods)
+    total_storage = sum(none_to_zero(pod['containerVolumeInGb']) + none_to_zero(pod['persistentVolumeInGb']) for pod in pods)
 
     logging.info(f"Active Pods: {active_pods}")
     logging.info(f"Total GPUs: {total_gpus}")

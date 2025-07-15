@@ -132,3 +132,33 @@ def check_is_positive_int(value, name: str):
         raise ValueError("%s must be a positive number" % name)
 
     return
+
+
+def none_to_zero(value) -> int:
+    """Convert None to 0 for integer values. Also validates that non-None values are valid integers.
+    
+    Args:
+        value: Value to convert/validate
+
+    Returns:
+        int: 0 if value is None, otherwise the validated integer value
+
+    Examples:
+        >>> none_to_zero(None)
+        0
+        >>> none_to_zero(5)
+        5
+        >>> none_to_zero("123")
+        123
+        >>> none_to_zero(1.5)  # Raises ValueError
+    """
+    if value is None:
+        return 0
+
+    # Handle string inputs
+    if isinstance(value, str):
+        return 0 if not value.strip() else int(value)
+
+    # Handle numeric inputs
+    if isinstance(value, (int, float)):
+        return int(value)
