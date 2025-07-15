@@ -71,20 +71,20 @@ class PodApi(API):
 
         Args:
             image (str): Docker image to use
-            gpu_type (str, optional): Type of GPU to use (e.g., "NVIDIA_GeForce_RTX_4090_24G", "NVIDIA_L4_24G").
-            region (str, optional): Region where the pod will be created. Defaults to "us-west-1"
-            cloud_type (str, optional): Cloud type. Defaults to "SECURE"
-            pod_name (str): Name of the pod
-            official_image (str, optional): Whether the image is official. Defaults to "OFFICIAL"
-            image_public_type (str, optional): Image visibility type. Defaults to "PUBLIC"
+            gpu_type (str, optional): Type of GPU to use (e.g., "NVIDIA_GeForce_RTX_4090_24G", "NVIDIA_L4_24G")
+            region (str, optional): Region where the pod will be created
+            cloud_type (str, optional): Cloud type (e.g., SECURE, COMMUNITY). Defaults to "SECURE"
+            pod_name (str): Pod nickname
+            official_image (str, optional): Whether the image is official (e.g., OFFICIAL, CUSTOM). Defaults to "OFFICIAL"
+            image_public_type (str, optional): Image visibility type (e.g., PUBLIC, PRIVATE). Defaults to "PUBLIC"
             image_registry_username (str, optional): Registry username for private images
             image_registry_token (str, optional): Registry token for private images
-            resource_type (str, optional): Type of resource. Defaults to "GPU"
-            gpu_count (int): Number of GPUs to allocate
-            container_volume_in_gb (int, optional): Container volume size in GB. Defaults to 20
-            persistent_volume_in_gb (int, optional): Persistent volume size in GB. Defaults to 10
-            persistent_mount_path (str, optional): Mount path for persistent volume. Defaults to "/data"
-            initialization_command (str, optional): Command to run during initialization. Defaults to ""
+            resource_type (str, optional): Type of resource (e.g., GPU, CPU). Defaults to "GPU"
+            gpu_count (int): Number of GPUs to allocate. Defaults to 1
+            container_volume_in_gb (int, optional): Container volume size in GB
+            persistent_volume_in_gb (int, optional): Persistent volume size in GB
+            persistent_mount_path (str, optional): Mount path for persistent volume
+            initialization_command (str, optional): Command to run during initialization
             environment_vars (List[dict], optional): List of environment variables. Each dict should have 'key' and 'value'
             expose (List[dict], optional): List of ports to expose. Each dict should have 'port' and 'protocol'
 
