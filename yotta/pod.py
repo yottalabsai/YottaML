@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from yotta import API
-from yotta.lib.utils import check_is_positive_int
+from yotta.lib.utils import check_is_positive_int, none_to_zero, check_gpu_count, clean_none_value
 from yotta.lib.utils import check_required_parameter
 from yotta.lib.utils import check_required_parameters
 
@@ -70,23 +70,23 @@ class PodApi(API):
         POST /openapi/v1/pods
 
         Args:
-            image (str): Docker image to use
-            gpu_type (str, optional): Type of GPU to use (e.g., "NVIDIA_GeForce_RTX_4090_24G", "NVIDIA_L4_24G")
-            region (str, optional): Region where the pod will be created
-            cloud_type (str, optional): Cloud type (e.g., SECURE, COMMUNITY). Defaults to "SECURE"
-            pod_name (str): Pod nickname
-            official_image (str, optional): Whether the image is official (e.g., OFFICIAL, CUSTOM). Defaults to "OFFICIAL"
-            image_public_type (str, optional): Image visibility type (e.g., PUBLIC, PRIVATE). Defaults to "PUBLIC"
-            image_registry_username (str, optional): Registry username for private images
-            image_registry_token (str, optional): Registry token for private images
-            resource_type (str, optional): Type of resource (e.g., GPU, CPU). Defaults to "GPU"
+            image (str): Image name
+            gpu_type (str, optional): gpu type
+            region (str, optional): Region
+            cloud_type (str, optional): CloudTypeEnum SECURE, COMMUNITY. Defaults to "SECURE"
+            pod_name (str): Pod nickname. Defaults to "My Pod"
+            official_image (str, optional): ImageSourceEnum OFFICIAL, CUSTOM. Defaults to "CUSTOM"
+            image_public_type (str, optional): ImagePublicTypeEnum PUBLIC, PRIVATE. Defaults to "PUBLIC"
+            image_registry_username (str, optional): Image registry username
+            image_registry_token (str, optional): Image registry token
+            resource_type (str, optional): ResourceType GPU, CPU. Defaults to "GPU"
             gpu_count (int): Number of GPUs to allocate. Defaults to 1
-            container_volume_in_gb (int, optional): Container volume size in GB
-            persistent_volume_in_gb (int, optional): Persistent volume size in GB
-            persistent_mount_path (str, optional): Mount path for persistent volume
-            initialization_command (str, optional): Command to run during initialization
-            environment_vars (List[dict], optional): List of environment variables. Each dict should have 'key' and 'value'
-            expose (List[dict], optional): List of ports to expose. Each dict should have 'port' and 'protocol'
+            container_volume_in_gb (int, optional): Container volume unit:GB. Depends on gpu_type
+            persistent_volume_in_gb (int, optional): Persistent volume unit:GB. Depends on gpu_type
+            persistent_mount_path (str, optional): Persistent mount path
+            initialization_command (str, optional): Initialization command
+            environment_vars (List[dict], optional): Image needed environment vars [{"key":"myKey", "value": myValue}]
+            expose (List[dict], optional): Expose ports [{"port": 8000, "protocol": "HTTP"}]
 
         Returns:
             Json: Response containing the created pod ID
@@ -97,8 +97,13 @@ class PodApi(API):
             [gpu_type, "gpu_type"],
         ])
 
+        check_gpu_count(gpu_count)
+
+        if none_to_zero(persistent_volume_in_gb, "persistent_volume_in_gb") > 0:
+            check_required_parameter(persistent_mount_path, "persistent_mount_path")
+
         # Create the request object
-        payload = {
+        payload = clean_none_value({
             "region": region,
             "cloudType": cloud_type,
             "podName": pod_name,
@@ -116,7 +121,7 @@ class PodApi(API):
             "initializationCommand": initialization_command,
             "environmentVars": environment_vars,
             "expose": expose
-        }
+        })
 
         url_path = "/openapi/v1/pods/create"
         return self.http_post(url_path, payload)

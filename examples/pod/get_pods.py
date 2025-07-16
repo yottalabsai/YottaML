@@ -84,8 +84,11 @@ def display_pods_list(pods):
 
     # Calculate some statistics
     active_pods = sum(1 for pod in pods if pod['status'] == 'RUNNING')  # Assuming 1 is "Running"
-    total_gpus = sum(none_to_zero(pod['gpuCount']) for pod in pods)
-    total_storage = sum(none_to_zero(pod['containerVolumeInGb']) + none_to_zero(pod['persistentVolumeInGb']) for pod in pods)
+    total_gpus = sum(none_to_zero(pod['gpuCount'], 'gpuCount') for pod in pods)
+    total_storage = sum(
+        none_to_zero(pod['containerVolumeInGb'], 'containerVolumeInGb') +
+        none_to_zero(pod['persistentVolumeInGb'], 'persistentVolumeInGb')
+        for pod in pods)
 
     logging.info(f"Active Pods: {active_pods}")
     logging.info(f"Total GPUs: {total_gpus}")

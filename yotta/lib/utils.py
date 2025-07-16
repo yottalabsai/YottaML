@@ -11,7 +11,7 @@ from yotta.error import (
 )
 
 
-def cleanNoneValue(d) -> dict:
+def clean_none_value(d) -> dict:
     out = {}
     for k in d.keys():
         if d[k] is not None:
@@ -134,7 +134,7 @@ def check_is_positive_int(value, name: str):
     return
 
 
-def none_to_zero(value) -> int:
+def none_to_zero(value, name) -> int:
     """Convert None to 0 for integer values. Also validates that non-None values are valid integers.
     
     Args:
@@ -160,5 +160,50 @@ def none_to_zero(value) -> int:
         return 0 if not value.strip() else int(value)
 
     # Handle numeric inputs
-    if isinstance(value, (int, float)):
+    if isinstance(value, (int, float, bool)):
+        if isinstance(value, float) and not value.is_integer() or isinstance(value, bool):
+            msg = f"{name} must be an integer" if name else "Value must be an integer"
+            raise ValueError(msg)
         return int(value)
+
+    msg = f"{name} must be an integer" if name else "Value must be an integer"
+    raise ValueError(msg)
+
+
+def check_gpu_count(gpu_count):
+    """Validate that gpu_count is a positive number and power of 2.
+    
+    Args:
+        gpu_count: The number of GPUs to validate
+        
+    Raises:
+        ParameterTypeError: If gpu_count is not a number
+        ParameterValueError: If gpu_count is not positive or not a power of 2
+        
+    Examples:
+        >>> check_gpu_count(1)   # Valid
+        >>> check_gpu_count(2)   # Valid
+        >>> check_gpu_count(4)   # Valid
+        >>> check_gpu_count(3)   # Raises ParameterValueError - not power of 2
+        >>> check_gpu_count(0)   # Raises ParameterValueError - not positive
+        >>> check_gpu_count(-2)  # Raises ParameterValueError - not positive
+        >>> check_gpu_count("abc") # Raises ParameterTypeError - not a number
+    """
+    # Check if gpu_count is a number
+    if not isinstance(gpu_count, int) or isinstance(gpu_count, bool):
+        raise ParameterTypeError(["gpu_count", int])
+
+    # Check if gpu_count is an integer
+    if not float(gpu_count).is_integer():
+        raise ParameterValueError(["gpu_count must be an integer"])
+
+    # Convert to int for power of 2 check
+    gpu_count = int(gpu_count)
+
+    # Check if positive
+    if gpu_count <= 0:
+        raise ParameterValueError(["gpu_count must be greater than 0"])
+
+    # Check if power of 2
+    if gpu_count & (gpu_count - 1) != 0:
+        raise ParameterValueError(["gpu_count must be a power of 2 (1, 2, 4, 8, etc.)"])

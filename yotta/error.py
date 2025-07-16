@@ -35,7 +35,7 @@ class ParameterValueError(Error):
         self.params = params
 
     def __str__(self):
-        return "the enum value %s is invalid." % (", ".join(self.params))
+        return ", ".join(self.params)
 
 
 class ParameterTypeError(Error):

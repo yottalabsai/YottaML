@@ -6,7 +6,7 @@ import requests
 
 from yotta.__version__ import __version__
 from yotta.error import ClientError, ServerError
-from yotta.lib.utils import cleanNoneValue
+from yotta.lib.utils import clean_none_value
 from yotta.lib.utils import encoded_string
 
 
@@ -52,7 +52,7 @@ class API(object):
 
         url = self.base_url + url_path
 
-        params = cleanNoneValue(
+        params = clean_none_value(
             {
                 "params": self._prepare_params(payload),
                 "timeout": self.timeout,
@@ -79,7 +79,7 @@ class API(object):
 
         url = self.base_url + url_path
 
-        params = cleanNoneValue(
+        params = clean_none_value(
             {
                 "timeout": self.timeout,
                 "proxies": self.proxies,
@@ -105,7 +105,7 @@ class API(object):
 
         url = self.base_url + url_path
 
-        params = cleanNoneValue(
+        params = clean_none_value(
             {
                 "params": self._prepare_params(payload),
                 "timeout": self.timeout,
@@ -127,7 +127,7 @@ class API(object):
         return response.json()
 
     def _prepare_params(self, params):
-        return encoded_string(cleanNoneValue(params))
+        return encoded_string(clean_none_value(params))
 
     def _dispatch_request(self, http_method):
         return {
