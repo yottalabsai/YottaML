@@ -43,11 +43,7 @@ def display_pod_summary(pod):
     logging.info(
         f"{status_indicator} {pod['id']:10} | "
         f"{pod['podName'][:20]:<20} | "
-        f"{pod['gpuType'][:15]:<15} x{pod['gpuCount']:<2} | "
-        f"{format_size(pod['containerVolumeInGb']):<8} | "
-        f"{format_network_speed(pod['networkUploadMbps']):<10} ↑ | "
-        f"Ports: {port_status:<8} | "
-        f"Env Vars: {len(pod['environmentVars']):<3}"
+        f"{pod['gpuType'][:15]:<15} x{pod['gpuCount']:<2}"
     )
 
 
@@ -61,13 +57,7 @@ def display_pods_list(pods):
     logging.info("\nPods List:")
     logging.info("=" * 100)
     logging.info(
-        "  ID                  | "
-        "Name                 | "
-        "GPU Type            | "
-        "Storage  | "
-        "Network      | "
-        "Ports           | "
-        "Env"
+        "  ID                  | Name                 | GPU Type"
     )
     logging.info("-" * 100)
 
@@ -85,14 +75,9 @@ def display_pods_list(pods):
     # Calculate some statistics
     active_pods = sum(1 for pod in pods if pod['status'] == 'RUNNING')  # Assuming 1 is "Running"
     total_gpus = sum(none_to_zero(pod['gpuCount'], 'gpuCount') for pod in pods)
-    total_storage = sum(
-        none_to_zero(pod['containerVolumeInGb'], 'containerVolumeInGb') +
-        none_to_zero(pod['persistentVolumeInGb'], 'persistentVolumeInGb')
-        for pod in pods)
 
     logging.info(f"Active Pods: {active_pods}")
     logging.info(f"Total GPUs: {total_gpus}")
-    logging.info(f"Total Storage: {format_size(total_storage)}")
 
 
 def main():
