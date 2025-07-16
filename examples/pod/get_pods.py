@@ -34,11 +34,6 @@ def display_pod_summary(pod):
     }
     status_indicator = status_symbols.get(pod['status'], "⚪")
 
-    # Count active ports
-    active_ports = sum(1 for port in pod['expose'] if port['healthy'])
-    total_ports = len(pod['expose'])
-    port_status = f"{active_ports}/{total_ports}" if total_ports > 0 else "N/A"
-
     # Format the line
     logging.info(
         f"{status_indicator} {pod['id']:10} | "
