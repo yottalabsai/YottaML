@@ -27,7 +27,7 @@ class ParameterRequiredError(Error):
         self.params = params
 
     def __str__(self):
-        return "%s is mandatory, but received empty." % (", ".join(self.params))
+        return "%s is required, but received empty." % (", ".join(self.params))
 
 
 class ParameterValueError(Error):

@@ -189,12 +189,8 @@ def check_gpu_count(gpu_count):
         >>> check_gpu_count(-2)  # Raises ParameterValueError - not positive
         >>> check_gpu_count("abc") # Raises ParameterTypeError - not a number
     """
-    # Check if gpu_count is a number
-    if not isinstance(gpu_count, int) or isinstance(gpu_count, bool):
-        raise ParameterTypeError(["gpu_count", int])
-
     # Check if gpu_count is an integer
-    if not float(gpu_count).is_integer():
+    if not isinstance(gpu_count, (int, str)) or isinstance(gpu_count, bool) or not float(gpu_count).is_integer():
         raise ParameterValueError(["gpu_count must be an integer"])
 
     # Convert to int for power of 2 check

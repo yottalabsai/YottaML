@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from yotta import API
+from yotta.lib.enums import ResourceType
 from yotta.lib.utils import check_is_positive_int, none_to_zero, check_gpu_count, clean_none_value
 from yotta.lib.utils import check_required_parameter
 from yotta.lib.utils import check_required_parameters
@@ -80,7 +81,7 @@ class PodApi(API):
             image_registry_username (str, optional): Image registry username
             image_registry_token (str, optional): Image registry token
             resource_type (str, optional): ResourceType GPU, CPU. Defaults to "GPU"
-            gpu_count (int): Number of GPUs to allocate. Defaults to 1
+            gpu_count (int): Number of GPUs to allocate. Required if resource_type is "GPU". Min 1
             container_volume_in_gb (int, optional): Container volume unit:GB. Depends on gpu_type
             persistent_volume_in_gb (int, optional): Persistent volume unit:GB. Depends on gpu_type
             persistent_mount_path (str, optional): Persistent mount path
@@ -97,7 +98,9 @@ class PodApi(API):
             [gpu_type, "gpu_type"],
         ])
 
-        check_gpu_count(gpu_count)
+        if resource_type is None or resource_type == ResourceType.GPU.value:
+            check_required_parameter(gpu_count, "gpu_count")
+            check_gpu_count(gpu_count)
 
         if none_to_zero(persistent_volume_in_gb, "persistent_volume_in_gb") > 0:
             check_required_parameter(persistent_mount_path, "persistent_mount_path")

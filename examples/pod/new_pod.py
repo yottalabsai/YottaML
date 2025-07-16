@@ -58,6 +58,7 @@ def main():
         "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025050802",
         "gpu_type": "NVIDIA_L4_24G",
         "pod_name": "Test_from_SDK",
+        "resource_type": "GPU",
         "gpu_count": 1,
         "expose": [
             {
