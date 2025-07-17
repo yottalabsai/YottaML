@@ -87,7 +87,7 @@ class TestCheckGpuCount:
         """Test non-numeric types"""
         invalid_values = ["abc", "123", True, False, [], {}]
         for value in invalid_values:
-            with pytest.raises(ParameterTypeError) as exc_info:
+            with pytest.raises(ParameterValueError) as exc_info:
                 check_gpu_count(value)
             assert "gpu_count" in str(exc_info.value)
 
