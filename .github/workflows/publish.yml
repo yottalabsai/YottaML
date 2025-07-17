@@ -32,13 +32,13 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('requirements.txt') }}
+        key: ${{ hashFiles('requirements/requirements.txt') }}
 
     # install dependencies
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements/requirements.txt
 
     # install build
     - name: Install pypa/build
