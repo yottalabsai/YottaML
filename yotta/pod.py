@@ -12,19 +12,30 @@ class PodApi(API):
         super().__init__(api_key, **kwargs)
 
     def get_pods(self, region: list[str] = None, status_list: list[int] = None, **kwargs):
-        """All Pods
+        """Get Pod list
 
         GET /openapi/v1/pods/list
 
         Args:
-        Returns:
-            Json: List of pod details
-        """
+            region (list[str], optional): Filter pods by region, e.g. ["sg", "us-east-1"].
+            status (list[int], optional): Filter pods by status. Available values:
+                - 0 INITIALIZE
+                - 1 RUNNING
+                - 2 PAUSING
+                - 3 PAUSED
+                - 4 TERMINATING
+                - 5 TERMINATED
+                - 6 FAILED
+        **kwargs: Additional query parameters, will be passed directly into query string.
 
+        Returns:
+            Json: List of pod details ordered by updatedAt (descending).
+
+        """
         payload = {**kwargs}
 
         if region:
-            # Spring Boot 会自动解析逗号分隔成 List
+
             payload["region"] = ",".join(region)
 
         if status_list:
@@ -137,6 +148,19 @@ class PodApi(API):
         return self.http_post(url_path, payload)
 
     def pause_pod(self, pod_id: str):
+        """Pause Pod
+
+        POST /openapi/v1/pods/pause/{pod_id}
+
+        Args:
+            pod_id (str): ID of the pod to pause. Must be a positive integer.
+
+        Returns:
+            Json: Response indicating success of pause operation
+
+        Raises:
+            ValueError: If pod_id is not a valid positive integer
+        """
         check_required_parameter(pod_id, "pod_id")
         check_is_positive_int(pod_id, "pod_id")
 
@@ -144,6 +168,19 @@ class PodApi(API):
         return self.http_post(url_path, payload=None)
 
     def resume_pod(self, pod_id: str):
+        """Resume Pod
+
+        POST /openapi/v1/pods/resume/{pod_id}
+
+        Args:
+            pod_id (str): ID of the pod to resume. Must be a positive integer.
+
+        Returns:
+            Json: Response indicating success of resume operation
+
+        Raises:
+            ValueError: If pod_id is not a valid positive integer
+        """
         check_required_parameter(pod_id, "pod_id")
         check_is_positive_int(pod_id, "pod_id")
 
