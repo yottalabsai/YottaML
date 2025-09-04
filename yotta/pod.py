@@ -128,3 +128,17 @@ class PodApi(API):
 
         url_path = "/openapi/v1/pods/create"
         return self.http_post(url_path, payload)
+
+        def pause_pod(self, pod_id: str):
+            check_required_parameter(pod_id, "pod_id")
+            check_is_positive_int(pod_id, "pod_id")
+
+            url_path = f"/openapi/v1/pods/pause/{pod_id}"
+            return self.http_post(url_path, payload=None)
+
+        def resume_pod(self, pod_id: str):
+            check_required_parameter(pod_id, "pod_id")
+            check_is_positive_int(pod_id, "pod_id")
+
+            url_path = f"/openapi/v1/pods/resume/{pod_id}/"
+            return self.http_post(url_path, payload=None)
