@@ -99,18 +99,21 @@ def display_pods_list(pods: list[dict]):
 
 
 def parse_args():
-    """CLI filters to match API: region + statusList"""
+    """CLI filters to match API: regionList + statusList"""
     parser = argparse.ArgumentParser(
         description="List pods with optional region/status filters."
     )
+    # 新参数名（与后端 Controller 对齐），并保留旧别名做兼容
     parser.add_argument(
-        "--region",
+        "--region-list", "--region",
+        dest="region_list",
         help="Comma separated regions, e.g. sg,us-east-1",
         default=None,
         type=str,
     )
     parser.add_argument(
-        "--status",
+        "--status-list", "--status",
+        dest="status_list",
         help="Comma separated status values (0..6). e.g. 1,3",
         default=None,
         type=str,
@@ -142,16 +145,16 @@ def main():
     client = PodApi(api_key, base_url=args.base_url, debug=args.debug)
 
     # Build filters for SDK
-    region_list = args.region.split(",") if args.region else None
+    region_list = args.region_list.split(",") if args.region_list else None
     status_list = (
-        [int(s.strip()) for s in args.status.split(",") if s.strip().isdigit()]
-        if args.status
+        [int(s.strip()) for s in args.status_list.split(",") if s.strip().isdigit()]
+        if args.status_list
         else None
     )
 
     try:
-        # Fetch
-        resp = client.get_pods(region=region_list, status_list=status_list)
+        # Fetch（注意这里改成与 SDK/Controller 对齐的参数名）
+        resp = client.get_pods(region_list=region_list, status_list=status_list)
 
         # Basic check (platform-standard envelope)
         if resp.get("code") == 10000:

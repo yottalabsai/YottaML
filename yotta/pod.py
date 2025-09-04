@@ -11,14 +11,14 @@ class PodApi(API):
     def __init__(self, api_key=None, **kwargs):
         super().__init__(api_key, **kwargs)
 
-    def get_pods(self, region: list[str] = None, status_list: list[int] = None, **kwargs):
+    def get_pods(self, region_list: list[str] = None, status_list: list[int] = None, **kwargs):
         """Get Pod list
 
         GET /openapi/v1/pods/list
 
         Args:
-            region (list[str], optional): Filter pods by region, e.g. ["sg", "us-east-1"].
-            status (list[int], optional): Filter pods by status. Available values:
+            region_list (list[str], optional): Filter pods by region, e.g. ["sg", "us-east-1"].
+            status_list (list[int], optional): Filter pods by status. Available values:
                 - 0 INITIALIZE
                 - 1 RUNNING
                 - 2 PAUSING
@@ -34,9 +34,8 @@ class PodApi(API):
         """
         payload = {**kwargs}
 
-        if region:
-
-            payload["region"] = ",".join(region)
+        if region_list:
+            payload["regionList"] = ",".join(region_list)
 
         if status_list:
             payload["statusList"] = ",".join(map(str, status_list))
