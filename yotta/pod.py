@@ -11,7 +11,7 @@ class PodApi(API):
     def __init__(self, api_key=None, **kwargs):
         super().__init__(api_key, **kwargs)
 
-    def get_pods(self, **kwargs):
+    def get_pods(self, region: list[str] = None, status_list: list[int] = None, **kwargs):
         """All Pods
 
         GET /openapi/v1/pods/list
@@ -22,6 +22,13 @@ class PodApi(API):
         """
 
         payload = {**kwargs}
+
+        if region:
+            # Spring Boot 会自动解析逗号分隔成 List
+            payload["region"] = ",".join(region)
+
+        if status_list:
+            payload["statusList"] = ",".join(map(str, status_list))
 
         url_path = "/openapi/v1/pods/list"
         return self.http_get(url_path, payload=payload)
@@ -129,16 +136,16 @@ class PodApi(API):
         url_path = "/openapi/v1/pods/create"
         return self.http_post(url_path, payload)
 
-        def pause_pod(self, pod_id: str):
-            check_required_parameter(pod_id, "pod_id")
-            check_is_positive_int(pod_id, "pod_id")
+    def pause_pod(self, pod_id: str):
+        check_required_parameter(pod_id, "pod_id")
+        check_is_positive_int(pod_id, "pod_id")
 
-            url_path = f"/openapi/v1/pods/pause/{pod_id}"
-            return self.http_post(url_path, payload=None)
+        url_path = f"/openapi/v1/pods/pause/{pod_id}"
+        return self.http_post(url_path, payload=None)
 
-        def resume_pod(self, pod_id: str):
-            check_required_parameter(pod_id, "pod_id")
-            check_is_positive_int(pod_id, "pod_id")
+    def resume_pod(self, pod_id: str):
+        check_required_parameter(pod_id, "pod_id")
+        check_is_positive_int(pod_id, "pod_id")
 
-            url_path = f"/openapi/v1/pods/resume/{pod_id}"
-            return self.http_post(url_path, payload=None)
+        url_path = f"/openapi/v1/pods/resume/{pod_id}"
+        return self.http_post(url_path, payload=None)
