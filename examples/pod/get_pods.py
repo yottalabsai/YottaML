@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import logging
 import argparse
 
@@ -9,171 +7,154 @@ from yotta.error import ClientError
 from yotta.lib.utils import config_logging, none_to_zero
 from yotta.pod import PodApi
 
-# --- Pod status enum (server side) ---
-# 0 INITIALIZE, 1 RUNNING, 2 PAUSING, 3 PAUSED, 4 TERMINATING, 5 TERMINATED, 6 FAILED
-STATUS_NAME = {
-    0: "INITIALIZE",
-    1: "RUNNING",
-    2: "PAUSING",
-    3: "PAUSED",
-    4: "TERMINATING",
-    5: "TERMINATED",
-    6: "FAILED",
-}
 
-STATUS_ICON = {
-    0: "⚪",  # initialize
-    1: "🟢",  # running
-    2: "🟡",  # pausing
-    3: "🟠",  # paused
-    4: "⏳",  # terminating
-    5: "⚫",  # terminated
-    6: "🔴",  # failed
-}
+def format_size(size_in_gb):
+    """Format size to appropriate unit"""
+    if size_in_gb >= 1024:
+        return f"{size_in_gb / 1024:.1f} TB"
+    return f"{size_in_gb} GB"
 
 
-def safe_str(s, maxlen):
-    """Safely cast any value to str and clip to max length."""
-    if s is None:
-        return "-"
-    s = str(s)
-    return s[:maxlen]
+def format_network_speed(speed_mbps):
+    """Format network speed to appropriate unit"""
+    if float(speed_mbps) >= 1000:
+        return f"{float(speed_mbps) / 1000:.1f} Gbps"
+    return f"{speed_mbps} Mbps"
 
 
-def format_status(status_value):
-    """Return icon + name for a numeric status."""
+def display_pod_summary(pod):
+    """Display a single line summary of pod information"""
+    status_map = {
+        0: "INITIALIZE",
+        1: "RUNNING",
+        2: "PAUSING",
+        3: "PAUSED",
+        4: "TERMINATING",
+    }
+    # 兼容后端可能返回字符串/数字的情况
+    raw_status = pod.get('status')
     try:
-        sv = int(status_value)
+        status_int = int(raw_status)
     except Exception:
-        sv = -1
-    icon = STATUS_ICON.get(sv, "⚪")
-    name = STATUS_NAME.get(sv, "UNKNOWN")
-    return f"{icon} {name}"
+        status_int = 0
+    status_str = status_map.get(status_int, "UNKNOWN")
 
-
-def display_pod_row(pod: dict):
-    """Print one row for a pod."""
-    pid = pod.get("id")
-    name = safe_str(pod.get("podName"), 22)
-    gpu_type = safe_str(pod.get("gpuType"), 18)
-    gpu_count = none_to_zero(pod.get("gpuCount"), "gpuCount")
-    region = safe_str(pod.get("region"), 14)
-    status = format_status(pod.get("status"))
+    # 端口健康统计（容错）
+    expose = pod.get('expose') or []
+    active_ports = sum(1 for p in expose if isinstance(p, dict) and p.get('healthy'))
+    total_ports = len(expose)
 
     logging.info(
-        f"{pid!s:>10} | {name:<22} | {gpu_type:<18} x{int(gpu_count):<2} | {region:<14} | {status}"
+        f" {str(pod.get('id','')):10} | "
+        f"{str(pod.get('podName',''))[:20]:<20} | "
+        f"{str(pod.get('gpuType',''))[:15]:<15} x{none_to_zero(pod.get('gpuCount'),'gpuCount'):<2} | "
+        f"{status_str}"
     )
 
 
-def display_pods_list(pods: list[dict]):
-    """Render pods as a small table and print summary."""
+def display_pods_list(pods):
+    """Display a list of pods in a table format"""
     if not pods:
         logging.info("No pods found.")
         return
 
-    # Header
-    logging.info("")
-    logging.info("Pods List")
+    logging.info("\nPods List:")
     logging.info("=" * 100)
-    logging.info(
-        f"{'ID':>10} | {'Name':<22} | {'GPU Type':<18}   {' ':<2}| {'Region':<14} | {'Status'}"
-    )
+    logging.info("  ID                | Name                 | GPU Type            | Status")
     logging.info("-" * 100)
 
-    # Sort by createdAt desc if present; fall back to id
-    def _sort_key(p):
-        return (p.get("createdAt") is not None, p.get("createdAt") or p.get("id") or 0)
+    sorted_pods = sorted(pods, key=lambda x: x.get('createdAt', 0), reverse=True)
+    for pod in sorted_pods:
+        display_pod_summary(pod)
 
-    for pod in sorted(pods, key=_sort_key, reverse=True):
-        display_pod_row(pod)
-
-    # Summary
     logging.info("-" * 100)
-    total = len(pods)
-    # Server returns numeric status; treat 1 as RUNNING
-    active = sum(1 for p in pods if str(p.get("status")) == "1")
-    total_gpus = sum(int(none_to_zero(p.get("gpuCount"), "gpuCount")) for p in pods)
-    logging.info(f"Total Pods : {total}")
-    logging.info(f"Active Pods: {active}")
-    logging.info(f"Total GPUs : {total_gpus}")
+    logging.info(f"Total Pods: {len(pods)}")
+
+    # 统计：活跃与总 GPU
+    def is_running(p):
+        try:
+            return int(p.get('status')) == 1
+        except Exception:
+            return False
+
+    active_pods = sum(1 for p in pods if is_running(p))
+    total_gpus = sum(none_to_zero(p.get('gpuCount'), 'gpuCount') for p in pods)
+    logging.info(f"Active Pods: {active_pods}")
+    logging.info(f"Total GPUs: {total_gpus}")
 
 
 def parse_args():
-    """CLI filters to match API: regionList + statusList"""
-    parser = argparse.ArgumentParser(
-        description="List pods with optional region/status filters."
-    )
-    # 新参数名（与后端 Controller 对齐），并保留旧别名做兼容
+    parser = argparse.ArgumentParser(description="List pods with optional region/status filters")
+    # 多值支持：--region ap-southeast-1 --region us-west-1
+    # 或者：--region ap-southeast-1,us-west-1
     parser.add_argument(
-        "--region-list", "--region",
-        dest="region_list",
-        help="Comma separated regions, e.g. sg,us-east-1",
-        default=None,
-        type=str,
+        "--region", dest="regions", action="append", default=[],
+        help="Region filter (repeatable or comma-separated), e.g. --region ap-southeast-1 --region us-west-1"
     )
     parser.add_argument(
-        "--status-list", "--status",
-        dest="status_list",
-        help="Comma separated status values (0..6). e.g. 1,3",
-        default=None,
-        type=str,
+        "--status", dest="statuses", action="append", default=[],
+        help="Status filter as integers (repeatable or comma-separated), e.g. --status 1 --status 4 or --status 1,4"
     )
     parser.add_argument(
-        "--base-url",
-        help="API base url",
-        default="https://api.dev.yottalabs.ai",
-        type=str,
+        "--base-url", default="https://api.dev.yottalabs.ai",
+        help="API base URL (default: https://api.dev.yottalabs.ai)"
     )
     parser.add_argument(
-        "--debug",
-        help="Enable debug logging",
-        action="store_true",
+        "--debug", action="store_true",
+        help="Enable HTTP debug logging"
     )
     return parser.parse_args()
 
 
+def flat_split(values):
+    """Support both repeated flags and comma-separated lists"""
+    out = []
+    for v in values or []:
+        if v is None:
+            continue
+        parts = [s.strip() for s in str(v).split(",") if str(s).strip()]
+        out.extend(parts)
+    return out
+
+
 def main():
+    config_logging(logging, logging.DEBUG)
     args = parse_args()
 
-    # Logging
-    config_logging(logging, logging.DEBUG if args.debug else logging.INFO)
-
-    # Auth
+    # 环境变量/准备脚本里读取 API Key
     api_key = get_api_key()
 
-    # Client
     client = PodApi(api_key, base_url=args.base_url, debug=args.debug)
 
-    # Build filters for SDK
-    region_list = args.region_list.split(",") if args.region_list else None
-    status_list = (
-        [int(s.strip()) for s in args.status_list.split(",") if s.strip().isdigit()]
-        if args.status_list
-        else None
-    )
+    # 处理 regionList/statusList
+    region_list = flat_split(args.regions) or None
+    status_strs = flat_split(args.statuses) or []
+    try:
+        status_list = [int(s) for s in status_strs] if status_strs else None
+    except ValueError:
+        raise SystemExit("Invalid --status value(s): must be integers, e.g. 1 or 1,4")
 
     try:
-        # Fetch（注意这里改成与 SDK/Controller 对齐的参数名）
-        resp = client.get_pods(region_list=region_list, status_list=status_list)
+        # 关键：把可选的 regionList/statusList 作为查询参数传入
+        response = client.get_pods(
+            **({"regionList": region_list} if region_list else {}),
+            **({"statusList": status_list} if status_list else {})
+        )
 
-        # Basic check (platform-standard envelope)
-        if resp.get("code") == 10000:
-            logging.info("Successfully retrieved pods list.")
-            pods = resp.get("data") or []
-            display_pods_list(pods)
+        if response.get('code') == 10000:
+            logging.info("Successfully retrieved pods list")
+            logging.info(f"Response message: {response.get('message')}")
+            display_pods_list(response.get('data') or [])
         else:
-            logging.warning("Unexpected response code: %s", resp.get("code"))
-            logging.warning("Response message: %s", resp.get("message"))
-
-    except ClientError as e:
+            logging.warning(f"Unexpected response code: {response.get('code')}")
+            logging.warning(f"Response message: {response.get('message')}")
+    except ClientError as error:
         logging.error(
             "Client error occurred. Status: %s, Error code: %s, Message: %s",
-            getattr(e, "status_code", None),
-            getattr(e, "error_code", None),
-            getattr(e, "error_message", None),
+            error.status_code, error.error_code, error.error_message
         )
-    except Exception as e:
-        logging.error("An unexpected error occurred: %s", str(e))
+    except Exception as error:
+        logging.error("An unexpected error occurred: %s", str(error))
 
 
 if __name__ == "__main__":
