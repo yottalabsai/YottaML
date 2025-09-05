@@ -24,21 +24,7 @@ def format_network_speed(speed_mbps):
 
 def display_pod_summary(pod):
     """Display a single line summary of pod information"""
-    status_map = {
-        0: "INITIALIZE",
-        1: "RUNNING",
-        2: "PAUSING",
-        3: "PAUSED",
-        4: "TERMINATING",
-        6: "FAILED",
-    }
-    # 兼容后端可能返回字符串/数字的情况
     raw_status = pod.get('status')
-    try:
-        status_int = int(raw_status)
-    except Exception:
-        status_int = 0
-    status_str = status_map.get(status_int, "UNKNOWN")
 
     # 端口健康统计（容错）
     expose = pod.get('expose') or []
@@ -49,7 +35,7 @@ def display_pod_summary(pod):
         f" {str(pod.get('id','')):10} | "
         f"{str(pod.get('podName',''))[:20]:<20} | "
         f"{str(pod.get('gpuType',''))[:15]:<15} x{none_to_zero(pod.get('gpuCount'),'gpuCount'):<2} | "
-        f"{status_str}"
+        f"{raw_status}"
     )
 
 
