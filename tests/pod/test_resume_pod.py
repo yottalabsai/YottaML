@@ -26,7 +26,7 @@ def test_resume_pod_success(pod_api):
         response = pod_api.resume_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once_with(f"/openapi/v1/pods/resume/{pod_id}/", payload=None)
+        mock_post.assert_called_once_with(f"/openapi/v1/pods/resume/{pod_id}", payload=None)
 
 
 def test_resume_pod_success_with_string_id(pod_api):
@@ -37,7 +37,7 @@ def test_resume_pod_success_with_string_id(pod_api):
         response = pod_api.resume_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once_with(f"/openapi/v1/pods/resume/{int(pod_id)}/", payload=None)
+        mock_post.assert_called_once_with(f"/openapi/v1/pods/resume/{int(pod_id)}", payload=None)
 
 
 def test_resume_pod_missing_id(pod_api):
