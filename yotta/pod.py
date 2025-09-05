@@ -24,8 +24,6 @@ class PodApi(API):
                 - 2 PAUSING
                 - 3 PAUSED
                 - 4 TERMINATING
-                - 5 TERMINATED
-                - 6 FAILED
         **kwargs: Additional query parameters, will be passed directly into query string.
 
         Returns:
