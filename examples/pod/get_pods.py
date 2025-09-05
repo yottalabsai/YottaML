@@ -30,6 +30,7 @@ def display_pod_summary(pod):
         2: "PAUSING",
         3: "PAUSED",
         4: "TERMINATING",
+        6: "FAILED",
     }
     # 兼容后端可能返回字符串/数字的情况
     raw_status = pod.get('status')
