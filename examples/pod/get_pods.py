@@ -60,7 +60,7 @@ def display_pods_list(pods):
     # 统计：活跃与总 GPU
     def is_running(p):
         try:
-            return int(p.get('status')) == 1
+            return p.get('status') == "RUNNING"
         except Exception:
             return False
 
