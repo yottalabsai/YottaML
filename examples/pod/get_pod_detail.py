@@ -23,7 +23,7 @@ def main():
         pod_id = 362740422811062272
 
         # Get pod detail
-        response = client.get_pod_detail(pod_id)
+        response = client.get_pod(pod_id)
 
         # Check response
         if response['code'] == 10000:

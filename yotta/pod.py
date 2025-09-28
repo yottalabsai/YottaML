@@ -185,10 +185,10 @@ class PodApi(API):
         url_path = f"/openapi/v1/pods/resume/{pod_id}"
         return self.http_post(url_path, payload=None)
 
-    def get_pod_detail(self, pod_id: str, **kwargs):
+    def get_pod(self, pod_id: str, **kwargs):
         """Get pod detail by ID
 
-        GET /openapi/v1/pods/detail/{pod_id}
+        GET /openapi/v1/pods/{pod_id}
 
         Args:
             pod_id (str): ID of the pod to retrieve detail. Must be a positive integer.
@@ -205,5 +205,5 @@ class PodApi(API):
         # Compose query payload (allow extra query params to pass-through)
         payload = {"id": pod_id, **kwargs}
 
-        url_path = f"/openapi/v1/pods/detail/{pod_id}"
+        url_path = f"/openapi/v1/pods/{pod_id}"
         return self.http_get(url_path)
