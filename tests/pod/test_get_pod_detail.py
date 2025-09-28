@@ -42,14 +42,22 @@ def test_get_pod_detail_invalid_id():
 
 
 def test_get_pod_detail_http_error():
+    """Test handling of HTTP 404 error when fetching pod detail"""
     client = PodApi("dummy", base_url="http://127.0.0.1:8080")
 
+    # Patch the http_get method to simulate a 404 Not Found response
+    # The ClientError constructor requires: (status_code, error_code, error_message, headers, data)
     with patch.object(client, "http_get", side_effect=ClientError(404, 40400, "Not Found", {}, None)):
-        with pytest.raises(ClientError) as exc_info:
+        try:
+            # This call should raise a ClientError due to the patched side effect
             client.get_pod_detail(999999)
+            # If no exception is raised, the test should fail
+            assert False, "Expected ClientError was not raised"
+        except ClientError as e:
+            # Print exception details for debugging purposes
+            print(f"Caught ClientError: status={e.status_code}, code={e.error_code}, message={e.error_message}")
 
-        # 可选：对异常细节做更精确的断言
-        e = exc_info.value
-        assert e.status_code == 404
-        assert e.error_code == 40400
-        assert "Not Found" in str(e.error_message)
+            # Assert the error properties to make sure the exception is as expected
+            assert e.status_code == 404
+            assert e.error_code == 40400
+            assert "Not Found" in str(e.error_message)
