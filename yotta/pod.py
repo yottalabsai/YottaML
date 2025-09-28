@@ -205,5 +205,5 @@ class PodApi(API):
         # Compose query payload (allow extra query params to pass-through)
         payload = {"id": pod_id, **kwargs}
 
-        url_path = "/openapi/v1/pods/detail/{pod_id}"
-        return self.http_get(url_path, payload=None)
+        url_path = f"/openapi/v1/pods/detail/{pod_id}"
+        return self.http_get(url_path)
