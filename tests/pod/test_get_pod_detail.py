@@ -44,6 +44,12 @@ def test_get_pod_detail_invalid_id():
 def test_get_pod_detail_http_error():
     client = PodApi("dummy", base_url="http://127.0.0.1:8080")
 
-    with patch.object(client, "http_get", side_effect=ClientError(404, 40400, "Not Found")):
-        with pytest.raises(ClientError):
+    with patch.object(client, "http_get", side_effect=ClientError(404, 40400, "Not Found", {}, None)):
+        with pytest.raises(ClientError) as exc_info:
             client.get_pod_detail(999999)
+
+        # 可选：对异常细节做更精确的断言
+        e = exc_info.value
+        assert e.status_code == 404
+        assert e.error_code == 40400
+        assert "Not Found" in str(e.error_message)
