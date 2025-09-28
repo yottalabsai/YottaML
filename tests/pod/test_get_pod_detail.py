@@ -50,7 +50,7 @@ def test_get_pod_detail_http_error():
     with patch.object(client, "http_get", side_effect=ClientError(404, 40400, "Not Found", {}, None)):
         try:
             # This call should raise a ClientError due to the patched side effect
-            client.get_pod_detail(999999)
+            client.get_pod(999999)
             # If no exception is raised, the test should fail
             assert False, "Expected ClientError was not raised"
         except ClientError as e:
