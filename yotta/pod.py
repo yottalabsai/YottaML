@@ -184,3 +184,26 @@ class PodApi(API):
 
         url_path = f"/openapi/v1/pods/resume/{pod_id}"
         return self.http_post(url_path, payload=None)
+
+    def get_pod_detail(self, pod_id: int, **kwargs):
+        """Get pod detail by ID
+
+        GET /openapi/v1/pods/detail?id={pod_id}
+
+        Args:
+            pod_id (int): Pod ID
+
+        Returns:
+            Json: Pod detail payload
+
+        Raises:
+            ValueError: If pod_id is not a positive integer.
+        """
+        check_required_parameter(pod_id, "pod_id")
+        check_is_positive_int(pod_id, "pod_id")
+
+        # Compose query payload (allow extra query params to pass-through)
+        payload = {"id": pod_id, **kwargs}
+
+        url_path = "/openapi/v1/pods/detail"
+        return self.http_get(url_path, payload=payload)
