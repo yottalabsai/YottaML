@@ -25,7 +25,7 @@ def test_get_pod_detail_success():
 
     with patch.object(client, "http_get", return_value=MOCK_DETAIL_RESPONSE) as mock_get:
         resp = client.get_pod_detail(123)
-        mock_get.assert_called_once_with("/openapi/v1/pods/detail", payload={"id": 123})
+        mock_get.assert_called_once_with("/openapi/v1/pods/detail/123")
         assert resp["code"] == 10000
         assert resp["data"]["id"] == 123
         assert resp["data"]["podName"] == "demo-pod"
