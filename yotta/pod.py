@@ -191,7 +191,7 @@ class PodApi(API):
         GET /openapi/v1/pods/detail?id={pod_id}
 
         Args:
-            pod_id (str): ID of the pod to detail. Must be a positive integer.
+            pod_id (str): ID of the pod to retrieve detail. Must be a positive integer.
 
         Returns:
             Json: Pod detail payload
