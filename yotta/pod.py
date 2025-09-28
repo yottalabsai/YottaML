@@ -185,13 +185,13 @@ class PodApi(API):
         url_path = f"/openapi/v1/pods/resume/{pod_id}"
         return self.http_post(url_path, payload=None)
 
-    def get_pod_detail(self, pod_id: int, **kwargs):
+    def get_pod_detail(self, pod_id: str, **kwargs):
         """Get pod detail by ID
 
         GET /openapi/v1/pods/detail?id={pod_id}
 
         Args:
-            pod_id (int): Pod ID
+            pod_id (str): Pod ID
 
         Returns:
             Json: Pod detail payload
