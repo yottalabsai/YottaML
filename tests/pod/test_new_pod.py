@@ -40,7 +40,8 @@ def test_new_pod_minimal_config(pod_api):
     with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
         response = pod_api.new_pod(
             image=VALID_CONFIG["image"],
-            gpu_type=VALID_CONFIG["gpu_type"]
+            gpu_type=VALID_CONFIG["gpu_type"],
+            gpu_count=1,
         )
 
         assert response == MOCK_SUCCESS_RESPONSE
