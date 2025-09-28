@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse
+
 import logging
 
 from examples.utils.prepare_env import get_api_key
@@ -8,44 +8,45 @@ from yotta.lib.utils import config_logging
 from yotta.pod import PodApi
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Get pod detail by ID")
-    parser.add_argument("--base-url", type=str, default="http://127.0.0.1:8080",
-                        help="Yotta OpenAPI base URL")
-    parser.add_argument("--debug", action="store_true", help="Enable HTTP debug logs")
-    parser.add_argument("--id", type=int, required=True, help="Pod ID to query")
-    return parser.parse_args()
-
-
-def display_detail(detail: dict):
-    if not detail:
-        logging.info("No pod detail returned.")
-        return
-    logging.info("Pod Detail:")
-    for k, v in detail.items():
-        logging.info("  %-24s: %s", k, v)
-
-
 def main():
+    # Configure logging to show debug information
     config_logging(logging, logging.DEBUG)
-    args = parse_args()
 
+    # Get API key from environment
     api_key = get_api_key()
-    client = PodApi(api_key, base_url=args.base_url, debug=args.debug)
+
+    # Initialize client with test environment
+    client = PodApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     try:
-        resp = client.get_pod_detail(args.id)
-        if resp.get("code") == 10000:
-            logging.info("Successfully retrieved pod detail.")
-            display_detail(resp.get("data"))
+        # Example pod ID to retrieve - replace with your actual pod ID
+        pod_id = 362740422811062272
+
+        # Get pod detail
+        response = client.get_pod_detail(pod_id)
+
+        # Check response
+        if response['code'] == 10000:
+            logging.info(f"Successfully retrieved pod {pod_id} detail")
+            logging.info(f"Response message: {response['message']}")
+
+            # Print each field in the detail response
+            detail = response.get("data") or {}
+            for k, v in detail.items():
+                logging.info(f"{k:25}: {v}")
         else:
-            logging.warning("Unexpected response code: %s", resp.get("code"))
-            logging.warning("Response message: %s", resp.get("message"))
+            logging.warning(f"Unexpected response code: {response['code']}")
+            logging.warning(f"Response message: {response['message']}")
+
     except ClientError as error:
-        logging.error("Client error. Status: %s, Code: %s, Message: %s",
-                      error.status_code, error.error_code, error.error_message)
+        # Handle client-side errors (4XX status codes)
+        logging.error(
+            "Client error occurred. Status: %s, Error code: %s, Message: %s",
+            error.status_code, error.error_code, error.error_message
+        )
     except Exception as error:
-        logging.error("Unexpected error: %s", str(error))
+        # Handle other unexpected errors
+        logging.error("An unexpected error occurred: %s", str(error))
 
 
 if __name__ == "__main__":
