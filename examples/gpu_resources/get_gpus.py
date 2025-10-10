@@ -18,8 +18,8 @@ def main():
         "size": 5,
         "sortBy": "price",
         "sortOrder": "asc",
-        "minSingleCardVram": 0,
-        "maxSingleCardVram": 1536
+        "minSingleCardVramInGb": 0,
+        "maxSingleCardVramInGb": 1536
     }
 
     try:
