@@ -22,7 +22,7 @@ def test_gpu_list_success(gpu_api):
     with patch.object(gpu_api, "http_post", return_value=mock_response) as mock_post:
         resp = gpu_api.get_gpus(payload)
         assert resp == mock_response
-        mock_post.assert_called_once_with("/api/resource/gpu/list", payload=payload)
+        mock_post.assert_called_once_with("/openapi/v1/gpu/list", payload=payload)
         assert resp["data"][0]["gpuType"] == "NVIDIA_L4"
 
 

@@ -12,7 +12,7 @@ class GpuResourceApi(API):
     def get_gpus(self, search_request: dict):
         """
         Get GPU resource list
-        POST /api/resource/gpu/list
+        POST /openapi/v1/gpu/list
 
         Args:
             search_request (dict): payload containing filters, pagination, etc.
@@ -20,17 +20,4 @@ class GpuResourceApi(API):
             Json: List of GpuResourceDetailResponse
         """
         check_required_parameter(search_request, "search_request")
-        return self.http_post("/api/resource/gpu/list", payload=search_request)
-
-    def get_gpus_filter(self, search_request: dict):
-        """
-        Get GPU type filter
-        POST /api/resource/gpu/type/filter
-
-        Args:
-            search_request (dict): filter criteria for GPU types
-        Returns:
-            Json: GpuResourceDetailResponse
-        """
-        check_required_parameter(search_request, "search_request")
-        return self.http_post("/api/resource/gpu/type/filter", payload=search_request)
+        return self.http_post("/openapi/v1/gpu/list", payload=search_request)
