@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from yotta.gpu_resource import GpuResourceApi
+from yotta.gpu import GpuResourceApi
 from yotta.error import ClientError
 from yotta.error import ParameterRequiredError
 

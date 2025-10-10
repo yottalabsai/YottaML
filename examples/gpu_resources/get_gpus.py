@@ -2,7 +2,7 @@
 import logging
 from examples.utils.prepare_env import get_api_key
 from yotta.lib.utils import config_logging
-from yotta.gpu_resource import GpuResourceApi
+from yotta.gpu import GpuResourceApi
 from yotta.error import ClientError
 
 

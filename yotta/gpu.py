@@ -3,7 +3,7 @@ from yotta import API
 from yotta.lib.utils import check_required_parameter
 
 
-class GpuResourceApi(API):
+class GpuApi(API):
     """GPU Resource API SDK for YottaLabs"""
 
     def __init__(self, api_key=None, **kwargs):
@@ -12,7 +12,7 @@ class GpuResourceApi(API):
     def get_gpus(self, search_request: dict):
         """
         Get GPU resource list
-        POST /openapi/v1/gpu/list
+        POST /openapi/v1/gpus/list
 
         Args:
             search_request (dict): payload containing filters, pagination, etc.
@@ -20,4 +20,4 @@ class GpuResourceApi(API):
             Json: List of GpuResourceDetailResponse
         """
         check_required_parameter(search_request, "search_request")
-        return self.http_post("/openapi/v1/gpu/list", payload=search_request)
+        return self.http_post("/openapi/v1/gpus/list", payload=search_request)
