@@ -13,7 +13,7 @@ def main():
 
     # 必填参数 minSingleCardVram 与 maxSingleCardVram
     payload = {
-        "region": "us-east-1",
+        "regions": ["us-east-1"],
         "page": 1,
         "size": 5,
         "sortBy": "price",
