@@ -14,7 +14,6 @@ def main():
 
     # 必填参数 minSingleCardVram 与 maxSingleCardVram
     payload = {
-        "gpuType": "",
         "regions": [],
         "minSingleCardVramInGb": 1,
         "maxSingleCardVramInGb": 300,

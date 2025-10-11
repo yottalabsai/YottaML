@@ -2,6 +2,7 @@ from typing import List, Optional
 from yotta import API
 from yotta.lib.utils import check_required_parameter
 
+
 class GpuApi(API):
     """GPU Resource API SDK for YottaLabs"""
 
