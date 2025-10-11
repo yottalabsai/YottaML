@@ -16,7 +16,9 @@ def main():
     payload = {
         "regions": [],
         "minSingleCardVramInGb": 1,
-        "maxSingleCardVramInGb": 300
+        "maxSingleCardVramInGb": 300,
+        "minSingleCardRamInGb": 1,
+        "maxSingleCardRamInGb": 300
     }
 
     try:
