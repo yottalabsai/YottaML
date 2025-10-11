@@ -15,10 +15,6 @@ def main():
     # 必填参数 minSingleCardVram 与 maxSingleCardVram
     payload = {
         "regions": [],
-        "page": 1,
-        "size": 5,
-        "sortBy": "price",
-        "sortOrder": "asc",
         "minSingleCardVramInGb": 1,
         "maxSingleCardVramInGb": 300
     }

@@ -17,7 +17,7 @@ def test_gpu_list_success(gpu_api):
         "message": "success",
         "data": [{"gpuType": "NVIDIA_L4", "gpuCount": 24}]
     }
-    payload = {"regions": ["us-east-1"], "page": 1, "size": 10}
+    payload = {"regions": ["us-east-1"]}
 
     with patch.object(gpu_api, "http_post", return_value=mock_response) as mock_post:
         resp = gpu_api.get_gpus(payload)
