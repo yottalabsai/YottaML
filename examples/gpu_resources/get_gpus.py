@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import logging
 from examples.utils.prepare_env import get_api_key
 from yotta.lib.utils import config_logging
@@ -13,24 +14,22 @@ def main():
 
     # 必填参数 minSingleCardVram 与 maxSingleCardVram
     payload = {
-        "regions": ["us-east-1"],
+        "regions": [],
         "page": 1,
         "size": 5,
         "sortBy": "price",
         "sortOrder": "asc",
-        "minSingleCardVramInGb": 0,
-        "maxSingleCardVramInGb": 1536
+        "minSingleCardVramInGb": 1,
+        "maxSingleCardVramInGb": 300
     }
 
     try:
         resp = client.get_gpus(payload)
         if resp.get("code") == 10000:
             logging.info("[GPU LIST] total: %d", len(resp.get("data", [])))
-            for item in resp.get("data", []):
-                gpu_type = item.get("gpuType", "Unknown")
-                memory = item.get("memory") or 0  # 避免 None
-                price = item.get("price") or "N/A"  # 避免 None
-                logging.info(" - %-15s %4dGB  $%s/hr", gpu_type, memory, price)
+            data = resp.get("data", [])
+            logging.info("[GPU LIST] total: %d", len(data))
+            logging.info(json.dumps(data, indent=2, ensure_ascii=False))
         else:
             logging.warning("[GPU LIST] unexpected code: %s %s",
                             resp.get("code"), resp.get("message"))
