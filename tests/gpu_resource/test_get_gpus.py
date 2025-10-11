@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from yotta.gpu import GpuResourceApi
+from yotta.gpu import GpuApi
 from yotta.error import ClientError
 from yotta.error import ParameterRequiredError
 
@@ -8,7 +8,7 @@ from yotta.error import ParameterRequiredError
 @pytest.fixture
 def gpu_api():
     """创建一个 GpuResourceApi 实例"""
-    return GpuResourceApi(api_key="fake_api_key", base_url="https://api.test.yottalabs.ai")
+    return GpuApi(api_key="fake_api_key", base_url="https://api.test.yottalabs.ai")
 
 def test_gpu_list_success(gpu_api):
     """测试 gpu_list 正常返回"""
