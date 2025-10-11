@@ -2,14 +2,14 @@
 import logging
 from examples.utils.prepare_env import get_api_key
 from yotta.lib.utils import config_logging
-from yotta.gpu import GpuResourceApi
+from yotta.gpu import GpuApi
 from yotta.error import ClientError
 
 
 def main():
     config_logging(logging, logging.INFO)
     api_key = get_api_key()
-    client = GpuResourceApi(api_key, base_url="https://api.dev.yottalabs.ai")
+    client = GpuApi(api_key, base_url="https://api.dev.yottalabs.ai")
 
     # 必填参数 minSingleCardVram 与 maxSingleCardVram
     payload = {
