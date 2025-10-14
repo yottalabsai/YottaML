@@ -59,6 +59,7 @@ def main():
         "gpu_type": "NVIDIA_L4_24G",
         "pod_name": "Test_from_SDK",
         "resource_type": "GPU",
+        "min_single_card_ram_in_gb": 50,
         "gpu_count": 1,
         "expose": [
             {

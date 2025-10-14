@@ -63,6 +63,7 @@ def test_new_pod_full_config(pod_api):
         "official_image": "OFFICIAL",
         "image_public_type": "PUBLIC",
         "resource_type": "GPU",
+        "min_single_card_ram_in_gb": 20,
         "container_volume_in_gb": 20,
         "persistent_volume_in_gb": 10,
         "persistent_mount_path": "/data",
@@ -88,6 +89,7 @@ def test_new_pod_full_config(pod_api):
         assert payload["resourceType"] == full_config["resource_type"]
         assert payload["gpuType"] == full_config["gpu_type"]
         assert payload["gpuCount"] == full_config["gpu_count"]
+        assert payload["min_single_card_ram_in_gb"] == full_config["min_single_card_ram_in_gb"]
         assert payload["containerVolumeInGb"] == full_config["container_volume_in_gb"]
         assert payload["persistentVolumeInGb"] == full_config["persistent_volume_in_gb"]
         assert payload["persistentMountPath"] == full_config["persistent_mount_path"]

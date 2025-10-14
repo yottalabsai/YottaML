@@ -75,6 +75,7 @@ class PodApi(API):
             image_registry_token: Optional[str] = None,
             resource_type: Optional[str] = None,
             gpu_count: Optional[int] = None,
+            min_single_card_ram_in_gb: Optional[int] = None,
             container_volume_in_gb: Optional[int] = None,
             persistent_volume_in_gb: Optional[int] = None,
             persistent_mount_path: Optional[str] = None,
@@ -98,6 +99,7 @@ class PodApi(API):
             image_registry_token (str, optional): Image registry token
             resource_type (str, optional): ResourceType GPU, CPU. Defaults to "GPU"
             gpu_count (int): Number of GPUs to allocate. Required if resource_type is "GPU". Min 1
+            min_single_card_ram_in_gb (int, optional): Minimum single GPU RAM unit: GB. Depends on gpu_type.
             container_volume_in_gb (int, optional): Container volume unit:GB. Depends on gpu_type
             persistent_volume_in_gb (int, optional): Persistent volume unit:GB. Depends on gpu_type
             persistent_mount_path (str, optional): Persistent mount path
@@ -134,6 +136,7 @@ class PodApi(API):
             "resourceType": resource_type,
             "gpuType": gpu_type,
             "gpuCount": gpu_count,
+            "min_single_card_ram_in_gb": min_single_card_ram_in_gb,
             "containerVolumeInGb": container_volume_in_gb,
             "persistentVolumeInGb": persistent_volume_in_gb,
             "persistentMountPath": persistent_mount_path,
