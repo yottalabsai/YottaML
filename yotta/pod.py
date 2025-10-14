@@ -136,7 +136,7 @@ class PodApi(API):
             "resourceType": resource_type,
             "gpuType": gpu_type,
             "gpuCount": gpu_count,
-            "min_single_card_ram_in_gb": min_single_card_ram_in_gb,
+            "minSingleCardRamInGb": min_single_card_ram_in_gb,
             "containerVolumeInGb": container_volume_in_gb,
             "persistentVolumeInGb": persistent_volume_in_gb,
             "persistentMountPath": persistent_mount_path,
