@@ -86,6 +86,7 @@ def test_new_pod_full_config(pod_api):
         assert payload["image"] == full_config["image"]
         assert payload["officialImage"] == full_config["official_image"]
         assert payload["imagePublicType"] == full_config["image_public_type"]
+        assert payload["imageRegistry"] == "https://index.docker.io/v1/"
         assert payload["resourceType"] == full_config["resource_type"]
         assert payload["gpuType"] == full_config["gpu_type"]
         assert payload["gpuCount"] == full_config["gpu_count"]
@@ -169,3 +170,20 @@ def test_new_pod_with_exposed_ports(pod_api):
         payload = call_args[1]
         assert payload["expose"] == config["expose"]
         assert len(payload["expose"]) == 3
+
+def test_new_pod_custom_registry(pod_api):
+    """Test custom image registry URL"""
+    config = {
+        "image": "yottalabsai/pytorch:2.8.0",
+        "gpu_type": "NVIDIA_L4_24G",
+        "gpu_count": 1,
+        "image_registry": "https://registry.yottalabs.ai"
+    }
+
+    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+        response = pod_api.new_pod(**config)
+        assert response == MOCK_SUCCESS_RESPONSE
+
+        call_args = mock_post.call_args[0]
+        payload = call_args[1]
+        assert payload["imageRegistry"] == config["image_registry"]

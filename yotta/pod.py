@@ -71,6 +71,7 @@ class PodApi(API):
             pod_name: Optional[str] = None,
             official_image: Optional[str] = None,
             image_public_type: Optional[str] = None,
+            image_registry: Optional[str] = "https://index.docker.io/v1/",
             image_registry_username: Optional[str] = None,
             image_registry_token: Optional[str] = None,
             resource_type: Optional[str] = None,
@@ -95,6 +96,7 @@ class PodApi(API):
             pod_name (str): Pod nickname. Defaults to "My Pod"
             official_image (str, optional): ImageSourceEnum OFFICIAL, CUSTOM. Defaults to "CUSTOM"
             image_public_type (str, optional): ImagePublicTypeEnum PUBLIC, PRIVATE. Defaults to "PUBLIC"
+            image_registry (str, optional): Image registry url. Defaults to "https://index.docker.io/v1/"
             image_registry_username (str, optional): Image registry username
             image_registry_token (str, optional): Image registry token
             resource_type (str, optional): ResourceType GPU, CPU. Defaults to "GPU"
@@ -131,6 +133,7 @@ class PodApi(API):
             "image": image,
             "officialImage": official_image,
             "imagePublicType": image_public_type,
+            "imageRegistry": image_registry,
             "imageRegistryUsername": image_registry_username,
             "imageRegistryToken": image_registry_token,
             "resourceType": resource_type,
