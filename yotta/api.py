@@ -22,15 +22,14 @@ class API(object):
             private_key_pass=None,
     ):
         self.api_key = api_key
-        self.base_url = base_url
-        if self.base_url is None:
-            self.base_url = "https://api.yottalabs.ai"
+        self.base_url = base_url or "https://api.yottalabs.ai"
 
         self.timeout = timeout
-        self.proxies = proxies
+        self.proxies = proxies if isinstance(proxies, dict) else None
         self.debug = debug
         self.private_key = private_key
         self.private_key_pass = private_key_pass
+
         self.session = requests.Session()
         self.session.headers.update(
             {
@@ -40,13 +39,24 @@ class API(object):
             }
         )
 
-        if type(proxies) is dict:
-            self.proxies = proxies
-
         self._logger = logging.getLogger(__name__)
-        return
+        # return
 
-    def http_get(self, url_path, payload=None):
+    def _build_headers(self, extra_headers=None):
+        """
+        Merge session-level headers with per-request headers.
+        Per-request headers override session defaults on key conflicts.
+        """
+        if not extra_headers:
+            # use session default headers as-is
+            return self.session.headers
+
+        # requests.Session will NOT merge dicts for us; we must do it manually.
+        merged = dict(self.session.headers)
+        merged.update(extra_headers)
+        return merged
+
+    def http_get(self, url_path, payload=None, headers=None):
         if payload is None:
             payload = {}
 
@@ -57,13 +67,15 @@ class API(object):
                 "params": self._prepare_params(payload),
                 "timeout": self.timeout,
                 "proxies": self.proxies,
+                "headers": self._build_headers(headers),
             }
         )
 
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps(params))
+            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
+            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
 
         response = self.session.get(url=url, **params)
 
@@ -73,7 +85,7 @@ class API(object):
         self._handle_exception(response)
         return response.json()
 
-    def http_post(self, url_path, payload=None):
+    def http_post(self, url_path, payload=None, headers=None):
         if payload is None:
             payload = {}
 
@@ -83,13 +95,15 @@ class API(object):
             {
                 "timeout": self.timeout,
                 "proxies": self.proxies,
+                "headers": self._build_headers(headers),
             }
         )
 
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps(params))
+            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
+            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
 
         response = self.session.post(url=url, json=payload, **params)
 
@@ -99,7 +113,7 @@ class API(object):
         self._handle_exception(response)
         return response.json()
 
-    def http_delete(self, url_path, payload=None):
+    def http_delete(self, url_path, payload=None, headers=None):
         if payload is None:
             payload = {}
 
@@ -110,13 +124,15 @@ class API(object):
                 "params": self._prepare_params(payload),
                 "timeout": self.timeout,
                 "proxies": self.proxies,
+                "headers": self._build_headers(headers),
             }
         )
 
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps(params))
+            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
+            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
 
         response = self.session.delete(url=url, **params)
 

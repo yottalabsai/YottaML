@@ -12,3 +12,11 @@ def get_api_key():
     )
     config.read(config_file_path)
     return config["keys"]["api_key"]
+
+def get_endpoint_id():
+    config = ConfigParser()
+    config_file_path = os.path.join(
+        pathlib.Path(__file__).parent.resolve(), "..", "config.ini"
+    )
+    config.read(config_file_path)
+    return config["keys"]["X-Endpoint-ID"]
