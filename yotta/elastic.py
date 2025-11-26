@@ -1,23 +1,8 @@
 from enum import Enum
 from typing import List, Optional, Union
 from yotta import API
+from yotta.lib.enums import ElasticEndpointStatusEnum
 from yotta.lib.utils import check_required_parameter, check_is_positive_int, clean_none_value
-
-class ElasticEndpointStatusEnum(str, Enum):
-    """Same semantics as backend Java enum."""
-    INITIALIZING = "INITIALIZING"   # 0
-    RUNNING = "RUNNING"             # 1
-    STOPPING = "STOPPING"           # 2
-    STOPPED = "STOPPED"             # 3
-    FAILED = "FAILED"               # 4
-
-    @classmethod
-    def list(cls) -> List[str]:
-        return [e.value for e in cls]
-
-    @classmethod
-    def active(cls) -> List[str]:
-        return [cls.INITIALIZING.value, cls.RUNNING.value]
 
 class ElasticApi(API):
     """

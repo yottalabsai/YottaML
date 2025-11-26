@@ -5,45 +5,13 @@ import re
 from enum import IntEnum
 from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse
-
+from yotta.lib.enums import TaskStatus, ResultSendStatus
 from yotta import API
 from yotta.lib.utils import (
     check_required_parameter,
     check_is_positive_int,
     clean_none_value,
 )
-
-# ---------------------------------------------------------------------------
-# Enums (aligned with your spec)
-# ---------------------------------------------------------------------------
-
-class TaskStatus(IntEnum):
-    """
-    Task.status (backend semantics)
-      0 = PROCESSING
-      1 = DELIVERED
-      2 = SUCCESS
-      3 = FAILED
-    """
-    PROCESSING = 0
-    DELIVERED  = 1
-    SUCCESS    = 2
-    FAILED     = 3
-
-
-class ResultSendStatus(IntEnum):
-    """
-    Task.resultSendStatus (backend semantics)
-      0 = INIT
-      1 = SUCCESS
-      2 = FAILED
-      3 = MAX_RETRIES_EXCEEDED
-    """
-    INIT                 = 0
-    SUCCESS              = 1
-    FAILED               = 2
-    MAX_RETRIES_EXCEEDED = 3
-
 
 # ---------------------------------------------------------------------------
 # Validators (mirror your doc; raise ValueError on violations)
