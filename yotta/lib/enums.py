@@ -39,7 +39,6 @@ class PodStatus(Enum):
     FAILED = "FAILED"
 
 class ElasticEndpointStatusEnum(str, Enum):
-    """Same semantics as backend Java enum."""
     INITIALIZING = "INITIALIZING"   # 0
     RUNNING      = "RUNNING"        # 1
     STOPPING     = "STOPPING"       # 2

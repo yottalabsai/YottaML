@@ -8,7 +8,6 @@ class ElasticApi(API):
     """
     Python client for Elastic Deployment OpenAPI endpoints.
 
-    Mirrors Java controller:
       - GET  /openapi/v1/elastic/deploy/list
       - GET  /openapi/v1/elastic/deploy/{id}
       - POST /openapi/v1/elastic/deploy/{id}/workers
@@ -34,7 +33,6 @@ class ElasticApi(API):
         """
         payload = {**kwargs}
 
-        # Java controller accepts List<String> statusList.
         if status_list:
             normalized: List[str] = []
             for s in status_list:
