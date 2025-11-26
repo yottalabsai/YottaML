@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import re
-from enum import IntEnum
 from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse
-from yotta.lib.enums import TaskStatus, ResultSendStatus
+
 from yotta import API
+from yotta.lib.enums import TaskStatus, ResultSendStatus
 from yotta.lib.utils import (
     check_required_parameter,
     check_is_positive_int,
@@ -19,6 +19,7 @@ from yotta.lib.utils import (
 
 _USER_TASK_ID_RE = re.compile(r"^[A-Za-z0-9_]+$")
 
+
 def _validate_user_task_id(v: str) -> None:
     check_required_parameter(v, "userTaskId")
     if len(v) > 255:
@@ -26,12 +27,14 @@ def _validate_user_task_id(v: str) -> None:
     if not _USER_TASK_ID_RE.match(v):
         raise ValueError("userTaskId can only contain letters, numbers, and underscores")
 
+
 def _validate_worker_port(port: int) -> None:
     check_required_parameter(port, "workerPort")
     if port < 1:
         raise ValueError("workerPort must be at least 1")
     if port > 65535:
         raise ValueError("workerPort must not exceed 65535")
+
 
 def _normalize_and_validate_process_uri(uri: str) -> str:
     check_required_parameter(uri, "processUri")
@@ -46,6 +49,7 @@ def _normalize_and_validate_process_uri(uri: str) -> str:
         raise ValueError("processUri contains invalid characters for URI path")
     return uri
 
+
 def _validate_notify_url(u: Optional[str]) -> None:
     if not u:
         return
@@ -55,17 +59,20 @@ def _validate_notify_url(u: Optional[str]) -> None:
     if not (p.scheme in ("http", "https") and p.netloc):
         raise ValueError("notifyUrl must be a valid URL")
 
+
 def _validate_notify_auth_key(v: Optional[str]) -> None:
     if v is None:
         return
     if len(v) > 255:
         raise ValueError("notifyAuthKey exceeds maximum length of 255 characters")
 
+
 def _validate_task_data(d: Any) -> None:
     if d is None:
         raise ValueError("taskData is required")
     if isinstance(d, (dict, list, tuple, str)) and len(d) == 0:
         raise ValueError("taskData cannot be empty")
+
 
 def _validate_header(h: Optional[Dict[str, str]]) -> None:
     if h is None:
@@ -81,31 +88,33 @@ def _validate_header(h: Optional[Dict[str, str]]) -> None:
 # Client
 # ---------------------------------------------------------------------------
 
+
 class SkywalkerTaskApi(API):
     """
     Python client for Elastic Task module (OpenAPI v1).
 
-    Endpoints (with your latest rate limits):
+    Endpoints:
       1) Create Task
          POST /openapi/v1/skywalker/tasks/create
-         Limits: per-endpoint QPS=40 (total queued+processing <= 1000), global QPS=200
 
       2) Get Task Detail
          GET  /openapi/v1/skywalker/tasks/{id}
-         Limits: per-endpoint QPS=60, global QPS=400
 
       3) Get Processing Count
          GET  /openapi/v1/skywalker/tasks/processing/count
-         Limits: per-endpoint QPS=60, global QPS=400
 
       4) List Tasks (paged)
          GET  /openapi/v1/skywalker/tasks
-         Limits: per-endpoint QPS=60, global QPS=400
+
+    Rate limits:
+      - Skywalker applies per-endpoint and global rate limits.
+      - These limits are configurable on the backend and may change over time.
+      - For the latest rate-limit rules, please refer to the official Yotta API documentation.
 
     Required headers:
       - X-API-Key      : provided by API base
       - X-Endpoint-ID  : required per request (Elastic Deployment id)
-      - Content-Type   : application/json (POST)
+      - Content-Type   : application/json (for POST)
     """
 
     # ----------------------------- 1) Create Task -----------------------------
@@ -122,16 +131,20 @@ class SkywalkerTaskApi(API):
         header: Optional[Dict[str, str]] = None,
     ):
         """
-        Create a task and submit to elastic queue (idempotent on userTaskId within the same endpoint).
+        Create a task and submit it to the elastic queue
+        (idempotent on userTaskId within the same endpoint).
 
         POST /openapi/v1/skywalker/tasks/create
-        Limits: per-endpoint QPS 40 (queue size limit 1000), global QPS 200
+
+        Rate limits:
+          - Rate limiting is enforced server-side and may be adjusted dynamically.
+          - For the latest QPS and queue constraints, see the official API docs.
 
         Headers:
           X-Endpoint-ID : required (this method's `endpoint_id`)
           Content-Type  : application/json
 
-        Request (CreateTaskRequest):
+        Request body (CreateTaskRequest):
           - userTaskId     : string, required, <=255, ^[A-Za-z0-9_]+$
           - workerPort     : int, required, 1..65535
           - processUri     : string, required, <=255, no spaces, leading "/" enforced
@@ -140,7 +153,8 @@ class SkywalkerTaskApi(API):
           - taskData       : any json (object/array/string), required, non-empty
           - header         : dict[str,str], optional (forwarded headers to worker)
 
-        Returns: JSON dict (code/message/data.userTaskId)
+        Returns:
+          JSON dict containing standard response envelope (code/message/data).
         """
         # validate
         check_required_parameter(endpoint_id, "endpoint_id")
@@ -153,15 +167,17 @@ class SkywalkerTaskApi(API):
         _validate_task_data(task_data)
         _validate_header(header)
 
-        payload = clean_none_value({
-            "userTaskId":    user_task_id,
-            "workerPort":    worker_port,
-            "processUri":    process_uri,
-            "notifyUrl":     notify_url,
-            "notifyAuthKey": notify_auth_key,
-            "taskData":      task_data,
-            "header":        header,
-        })
+        payload = clean_none_value(
+            {
+                "userTaskId": user_task_id,
+                "workerPort": worker_port,
+                "processUri": process_uri,
+                "notifyUrl": notify_url,
+                "notifyAuthKey": notify_auth_key,
+                "taskData": task_data,
+                "header": header,
+            }
+        )
 
         headers = {
             "X-Endpoint-ID": str(int(endpoint_id)),
@@ -180,14 +196,30 @@ class SkywalkerTaskApi(API):
         Get task detail.
 
         GET /openapi/v1/skywalker/tasks/{id}
-        Limits: per-endpoint QPS 60, global QPS 400
+
+        Rate limits:
+          - Subject to Skywalker read rate limits (per-endpoint + global).
+          - Exact limits are controlled by backend configuration; see API docs for details.
 
         Headers:
           X-Endpoint-ID : required
 
-        Returns: JSON dict with TaskDTO (userTaskId, workerUrl, notifyUrl, timestamps,
-                 status, failedReason, resultSendStatus, resultSendCount, nextResultSendTime,
-                 taskData, header, taskResult, notifySendCount, lastNotifiedAt)
+        Returns:
+          JSON dict with TaskDTO, including fields such as:
+            - userTaskId
+            - workerUrl
+            - notifyUrl
+            - timestamps
+            - status
+            - failedReason
+            - resultSendStatus
+            - resultSendCount
+            - nextResultSendTime
+            - taskData
+            - header
+            - taskResult
+            - notifySendCount
+            - lastNotifiedAt
         """
         check_required_parameter(endpoint_id, "endpoint_id")
         check_is_positive_int(endpoint_id, "endpoint_id")
@@ -202,12 +234,23 @@ class SkywalkerTaskApi(API):
         Get number of tasks currently queued + processing for the endpoint.
 
         GET /openapi/v1/skywalker/tasks/processing/count
-        Limits: per-endpoint QPS 60, global QPS 400
+
+        Rate limits:
+          - Uses the same read rate limits as other Skywalker GET endpoints.
+          - See the official API documentation for current constraints.
 
         Headers:
           X-Endpoint-ID : required
 
-        Returns: JSON dict { code, message, data: { processingCount: int } }
+        Returns:
+          JSON dict:
+            {
+              "code": 10000,
+              "message": "success",
+              "data": {
+                "processingCount": <int>
+              }
+            }
         """
         check_required_parameter(endpoint_id, "endpoint_id")
         check_is_positive_int(endpoint_id, "endpoint_id")
@@ -228,28 +271,35 @@ class SkywalkerTaskApi(API):
         List tasks with pagination and optional status filter.
 
         GET /openapi/v1/skywalker/tasks
-        Limits: per-endpoint QPS 60, global QPS 400
 
-        Query:
+        Query parameters:
           - status   : optional, 0..3  (PROCESSING=0, DELIVERED=1, SUCCESS=2, FAILED=3)
           - page     : default 1 (>=1)
           - pageSize : default 10 (>=1)
 
+        Rate limits:
+          - This endpoint is subject to Skywalker list/read rate limits.
+          - The exact numeric thresholds are defined by backend configuration.
+          - Refer to the official Yotta API documentation for the latest values.
+
         Headers:
           X-Endpoint-ID : required
 
-        Returns: JSON dict
-          {
-            "code": 10000,
-            "message": "success",
-            "data": {
-              "items": [PageTaskDTO...],
-              "pagination": {
-                "page": <int>, "pageSize": <int>,
-                "totalCount": <int>, "totalPages": <int>
+        Returns:
+          JSON dict:
+            {
+              "code": 10000,
+              "message": "success",
+              "data": {
+                "items": [PageTaskDTO...],
+                "pagination": {
+                  "page": <int>,
+                  "pageSize": <int>,
+                  "totalCount": <int>,
+                  "totalPages": <int>
+                }
               }
             }
-          }
         """
         check_required_parameter(endpoint_id, "endpoint_id")
         check_is_positive_int(endpoint_id, "endpoint_id")
@@ -266,11 +316,13 @@ class SkywalkerTaskApi(API):
         if page_size < 1:
             raise ValueError("pageSize must be >= 1")
 
-        params = clean_none_value({
-            "status": status_val,
-            "page": page,
-            "pageSize": page_size,
-        })
+        params = clean_none_value(
+            {
+                "status": status_val,
+                "page": page,
+                "pageSize": page_size,
+            }
+        )
 
         headers = {"X-Endpoint-ID": str(int(endpoint_id))}
         return self.http_get("/openapi/v1/skywalker/tasks", payload=params, headers=headers)
@@ -281,20 +333,24 @@ class SkywalkerTaskApi(API):
         """
         Optional helper to validate NotifyRequestBody shape (client-side sanity check only).
 
+        This does not perform any network calls; it only validates the shape
+        of the notification payload received from Skywalker.
+
         Required fields:
-          task_id: int
-          user_task_id: string (<=255, ^[A-Za-z0-9_]+$)
-          endpoint_id: string (<=255)
-          status: "Success" | "Failed"
-          success: bool
-          timestamp: string (format not strictly enforced here)
-          retry_count: int >= 1
+          - task_id      : int
+          - user_task_id : string (<=255, ^[A-Za-z0-9_]+$)
+          - endpoint_id  : string (<=255)
+          - status       : "Success" | "Failed"
+          - success      : bool
+          - timestamp    : string (format not strictly enforced here)
+          - retry_count  : int >= 1
 
-        Optional:
-          result: object
-          failed_reason: string (when status is "Failed")
+        Optional fields:
+          - result        : object (any JSON-serializable value)
+          - failed_reason : string (when status is "Failed")
 
-        Raises ValueError on violations.
+        Raises:
+          ValueError if the payload shape is invalid or violates constraints.
         """
         if not isinstance(payload, dict):
             raise ValueError("notify payload must be a JSON object")
