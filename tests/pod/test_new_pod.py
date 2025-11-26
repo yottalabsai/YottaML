@@ -89,14 +89,13 @@ def test_new_pod_full_config(pod_api):
         assert payload["resourceType"] == full_config["resource_type"]
         assert payload["gpuType"] == full_config["gpu_type"]
         assert payload["gpuCount"] == full_config["gpu_count"]
-        assert payload["min_single_card_ram_in_gb"] == full_config["min_single_card_ram_in_gb"]
+        assert payload["minSingleCardRamInGb"] == full_config["min_single_card_ram_in_gb"]
         assert payload["containerVolumeInGb"] == full_config["container_volume_in_gb"]
         assert payload["persistentVolumeInGb"] == full_config["persistent_volume_in_gb"]
         assert payload["persistentMountPath"] == full_config["persistent_mount_path"]
         assert payload["initializationCommand"] == full_config["initialization_command"]
         assert payload["environmentVars"] == full_config["environment_vars"]
         assert payload["expose"] == full_config["expose"]
-
 
 def test_new_pod_missing_required_params(pod_api):
     """Test that creating a pod without required parameters raises an error"""

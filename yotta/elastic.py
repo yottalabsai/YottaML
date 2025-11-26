@@ -108,4 +108,4 @@ class ElasticApi(API):
         })
 
         url_path = f"/openapi/v1/elastic/deploy/{int(endpoint_id)}/workers"
-        return self.http_post(url_path, payload)
+        return self.http_post(url_path, payload=payload)

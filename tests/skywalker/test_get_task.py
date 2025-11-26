@@ -1,6 +1,6 @@
 import os
 import pytest
-
+from yotta.error import ParameterRequiredError
 from yotta.skywalker import SkywalkerTaskApi
 
 
@@ -47,7 +47,7 @@ def test_get_task_empty_task_id():
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
     # empty string still matches type (str) but should fail "required" check
-    with pytest.raises(ValueError):
+    with pytest.raises(ParameterRequiredError):
         api.get_task(endpoint_id=1, task_id="")
 
 
