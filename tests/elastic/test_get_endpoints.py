@@ -8,7 +8,7 @@ def test_get_endpoints_with_status(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": []}
     api = ElasticApi("test-key", base_url="https://api.dev.yottalabs.ai")
 
-    result = api.get_endpoints(status_list=["running", "STOPPED"])
+    result = api.get_endpoints(status_list=["RUNNING", "STOPPED"])
     mock_get.assert_called_once()
     args, kwargs = mock_get.call_args
     path = args[0]
