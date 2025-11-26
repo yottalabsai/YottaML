@@ -1,27 +1,23 @@
 #!/usr/bin/env python
 import logging
-import argparse
 
 from examples.utils.prepare_env import get_api_key
-from yotta.lib.utils import config_logging
-from yotta.error import ClientError
 from yotta.elastic import ElasticApi
+from yotta.error import ClientError
+from yotta.lib.utils import config_logging
 
 
 def main():
     config_logging(logging, logging.DEBUG)
 
-    parser = argparse.ArgumentParser(description="Get elastic deployment detail")
-    parser.add_argument("id", help="Deployment ID (positive integer)")
-    parser.add_argument("--base-url", default="https://api.dev.yottalabs.ai", help="API base URL")
-    parser.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
-    args = parser.parse_args()
-
     api_key = get_api_key()
-    client = ElasticApi(api_key, base_url=args.base_url, debug=args.debug)
+    client = ElasticApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     try:
-        resp = client.get_endpoint(args.id)
+        # Example pod ID to retrieve - replace with your actual pod ID
+        deployment_id = 384425425995034706
+
+        resp = client.get_deployment_detail(deployment_id)
         if resp.get("code") == 10000:
             detail = resp.get("data") or {}
             logging.info("Deployment detail:")

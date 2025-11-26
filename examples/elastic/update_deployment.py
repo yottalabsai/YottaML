@@ -1,27 +1,18 @@
 #!/usr/bin/env python
-import logging
 import argparse
+import logging
 
 from examples.utils.prepare_env import get_api_key
-from yotta.lib.utils import config_logging
-from yotta.error import ClientError
 from yotta.elastic import ElasticApi
-
-
-def parse_args():
-    p = argparse.ArgumentParser(description="Update an elastic deployment")
-    p.add_argument("id", help="Deployment ID (positive integer)")
-    p.add_argument("--base-url", default="https://api.dev.yottalabs.ai", help="API base URL")
-    p.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
-    return p.parse_args()
+from yotta.error import ClientError
+from yotta.lib.utils import config_logging
 
 
 def main():
     config_logging(logging, logging.DEBUG)
-    args = parse_args()
 
     api_key = get_api_key()
-    client = ElasticApi(api_key, base_url=args.base_url, debug=args.debug)
+    client = ElasticApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     resources = [
         {
@@ -32,8 +23,11 @@ def main():
     ]
 
     try:
+        # Example pod ID to retrieve - replace with your actual pod ID
+        deployment_id = 384425425995034706
+
         resp = client.update_deployment(
-            deployment_id=args.id,
+            deployment_id=deployment_id,
             name="Llama-3.2-3B3",
             resources=resources,
             min_single_card_vram_in_gb=12,
@@ -71,5 +65,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

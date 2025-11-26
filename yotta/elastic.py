@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Union
 from yotta import API
-from yotta.lib.enums import ElasticEndpointStatusEnum
+from yotta.lib.enums import ElasticDeploymentStatusEnum
 from yotta.lib.utils import (
     check_required_parameter,
     check_required_parameters,
@@ -101,7 +101,7 @@ class ElasticApi(API):
         return self.http_post(url_path, payload=payload)
 
     # ------------------------- List deployments -------------------------
-    def get_endpoints(self, status_list: Optional[List[Union[str, ElasticEndpointStatusEnum]]] = None, **kwargs):
+    def get_deployments(self, status_list: Optional[List[Union[str, ElasticDeploymentStatusEnum]]] = None, **kwargs):
         """
         Get Elastic Deployment list.
 
@@ -122,7 +122,7 @@ class ElasticApi(API):
             for s in status_list:
                 if s is None:
                     continue
-                v = s.value if isinstance(s, ElasticEndpointStatusEnum) else str(s)
+                v = s.value if isinstance(s, ElasticDeploymentStatusEnum) else str(s)
                 v = v.strip().upper()
                 if v:
                     normalized.append(v)
@@ -133,7 +133,7 @@ class ElasticApi(API):
         return self.http_get(url_path, payload=payload)
 
     # ------------------------- Get one deployment -------------------------
-    def get_endpoint(self, deployment_id: Union[int, str]):
+    def get_deployment_detail(self, deployment_id: Union[int, str]):
         """
         Get Elastic Deployment detail by ID.
 

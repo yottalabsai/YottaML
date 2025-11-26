@@ -35,7 +35,7 @@ def test_get_endpoints_with_status(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": MOCK_DATA}
 
     api = ElasticApi("test-key", base_url="https://api.dev.yottalabs.ai")
-    result = api.get_endpoints(status_list=["RUNNING", "STOPPED"])
+    result = api.get_deployments(status_list=["RUNNING", "STOPPED"])
 
     # Ensure one HTTP GET call occurred
     mock_get.assert_called_once()
@@ -66,7 +66,7 @@ def test_get_endpoints_empty_status(mock_get):
     mock_get.return_value = {"code": 10000, "message": "ok", "data": []}
 
     api = ElasticApi("test-key")
-    api.get_endpoints(status_list=[])
+    api.get_deployments(status_list=[])
 
     _, kwargs = mock_get.call_args
     payload = kwargs.get("payload")
@@ -90,7 +90,7 @@ def test_get_endpoints_alias_active(mock_get):
     api = ElasticApi("test-key")
 
     # Example script would already expand 'active'
-    result = api.get_endpoints(status_list=["INITIALIZING", "RUNNING"])
+    result = api.get_deployments(status_list=["INITIALIZING", "RUNNING"])
 
     payload = mock_get.call_args[1].get("payload")
 
@@ -109,7 +109,7 @@ def test_get_endpoints_result_data_integrity(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": MOCK_DATA}
 
     api = ElasticApi("key")
-    resp = api.get_endpoints(status_list=["RUNNING"])
+    resp = api.get_deployments(status_list=["RUNNING"])
 
     # Validate structure integrity
     assert isinstance(resp["data"], list)

@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List
 from enum import IntEnum
 
+
 class ResourceType(Enum):
     CPU = "CPU"
     GPU = "GPU"
@@ -38,12 +39,13 @@ class PodStatus(Enum):
     TERMINATED = "TERMINATED"
     FAILED = "FAILED"
 
-class ElasticEndpointStatusEnum(str, Enum):
-    INITIALIZING = "INITIALIZING"   # 0
-    RUNNING      = "RUNNING"        # 1
-    STOPPING     = "STOPPING"       # 2
-    STOPPED      = "STOPPED"        # 3
-    FAILED       = "FAILED"         # 4
+
+class ElasticDeploymentStatusEnum(str, Enum):
+    INITIALIZING = "INITIALIZING"  # 0
+    RUNNING = "RUNNING"  # 1
+    STOPPING = "STOPPING"  # 2
+    STOPPED = "STOPPED"  # 3
+    FAILED = "FAILED"  # 4
 
     @classmethod
     def list(cls) -> List[str]:
@@ -52,6 +54,7 @@ class ElasticEndpointStatusEnum(str, Enum):
     @classmethod
     def active(cls) -> List[str]:
         return [cls.INITIALIZING.value, cls.RUNNING.value]
+
 
 class TaskStatus(IntEnum):
     """
@@ -62,9 +65,9 @@ class TaskStatus(IntEnum):
       3 = FAILED
     """
     PROCESSING = 0
-    DELIVERED  = 1
-    SUCCESS    = 2
-    FAILED     = 3
+    DELIVERED = 1
+    SUCCESS = 2
+    FAILED = 3
 
 
 class ResultSendStatus(IntEnum):
@@ -75,7 +78,7 @@ class ResultSendStatus(IntEnum):
       2 = FAILED
       3 = MAX_RETRIES_EXCEEDED
     """
-    INIT                 = 0
-    SUCCESS              = 1
-    FAILED               = 2
+    INIT = 0
+    SUCCESS = 1
+    FAILED = 2
     MAX_RETRIES_EXCEEDED = 3

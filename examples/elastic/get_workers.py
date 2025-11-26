@@ -1,51 +1,25 @@
 #!/usr/bin/env python
 import logging
-import argparse
 
 from examples.utils.prepare_env import get_api_key
-from yotta.lib.utils import config_logging
-from yotta.error import ClientError
 from yotta.elastic import ElasticApi
-
-
-def parse_args():
-    p = argparse.ArgumentParser(description="List workers of an elastic deployment")
-    p.add_argument("id", help="Deployment ID (positive integer)")
-    p.add_argument(
-        "--status",
-        dest="statuses",
-        action="append",
-        default=[],
-        help="Filter by worker status (repeatable or comma-separated), e.g. --status INITIALIZE --status RUNNING",
-    )
-    p.add_argument("--base-url", default="https://api.dev.yottalabs.ai", help="API base URL")
-    p.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
-    return p.parse_args()
-
-
-def flat_split(values):
-    out = []
-    for v in values or []:
-        if v is None:
-            continue
-        parts = [s.strip() for s in str(v).split(",") if str(s).strip()]
-        out.extend(parts)
-    return out
+from yotta.error import ClientError
+from yotta.lib.utils import config_logging
 
 
 def main():
     config_logging(logging, logging.DEBUG)
-    args = parse_args()
 
     api_key = get_api_key()
-    client = ElasticApi(api_key, base_url=args.base_url, debug=args.debug)
-
-    status_tokens = flat_split(args.statuses)
-    status_list = [s.upper() for s in status_tokens] or None
+    client = ElasticApi(api_key, base_url="https://api.dev.yottalabs.ai", debug=True)
 
     try:
+        # Example pod ID to retrieve - replace with your actual pod ID
+        deployment_id = 384425425995034706
+
+        status_list = ["INITIALIZE", "RUNNING"]
         resp = client.get_workers(
-            deployment_id=args.id,
+            deployment_id=deployment_id,
             status_list=status_list,
         )
         if resp.get("code") == 10000:
@@ -70,5 +44,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

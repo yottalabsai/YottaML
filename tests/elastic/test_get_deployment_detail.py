@@ -16,7 +16,7 @@ def test_get_deployment_valid(mock_get):
     }
 
     api = ElasticApi("key")
-    result = api.get_endpoint(123)
+    result = api.get_deployment_detail(123)
 
     # verify request path
     mock_get.assert_called_once_with("/openapi/v1/elastic/deploy/123")
@@ -34,7 +34,7 @@ def test_get_deployment_valid(mock_get):
 def test_get_deployment_invalid_id_type():
     api = ElasticApi("key")
     with pytest.raises(ValueError):
-        api.get_endpoint("abc")    # must be numeric
+        api.get_deployment_detail("abc")    # must be numeric
 
 
 # ----------------------------------------
@@ -43,7 +43,7 @@ def test_get_deployment_invalid_id_type():
 def test_get_deployment_negative_id():
     api = ElasticApi("key")
     with pytest.raises(ValueError):
-        api.get_endpoint(-5)
+        api.get_deployment_detail(-5)
 
 
 # ----------------------------------------
@@ -52,7 +52,7 @@ def test_get_deployment_negative_id():
 def test_get_deployment_none_id():
     api = ElasticApi("key")
     with pytest.raises(ParameterRequiredError):
-        api.get_endpoint(None)
+        api.get_deployment_detail(None)
 
 
 # ----------------------------------------
@@ -68,7 +68,7 @@ def test_get_deployment_response_passthrough(mock_get):
     mock_get.return_value = expected
 
     api = ElasticApi("key")
-    result = api.get_endpoint(999)
+    result = api.get_deployment_detail(999)
 
     assert result is expected  # same object
     assert result["data"]["extra"] == "field"
