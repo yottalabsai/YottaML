@@ -86,7 +86,7 @@ def display_task_row(item: dict) -> None:
     user_task_id = str(item.get("userTaskId", ""))[:30]
     status = str(item.get("status", ""))
     created_at = str(item.get("createdAt", ""))
-    notify_url = str(item.get("notifyUrl", ""))[:40]
+    notify_url = str(item.get("notifyUrl", ""))
 
     logging.info(
         f"{user_task_id:<32} | {status:<10} | {created_at:<23} | {notify_url}"
