@@ -43,7 +43,7 @@ def test_get_endpoints_with_status(mock_get):
     path = mock_get.call_args[0][0]
     payload = mock_get.call_args[1].get("payload")
 
-    # Verify correct endpoint path
+    # Verify correct deployment list path
     assert path == "/openapi/v1/elastic/deploy/list"
 
     # Verify payload contains normalized CSV status list

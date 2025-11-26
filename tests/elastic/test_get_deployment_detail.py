@@ -5,10 +5,10 @@ from yotta.error import ParameterRequiredError
 
 
 # ----------------------------------------
-# Test: valid endpoint ID
+# Test: valid deployment ID
 # ----------------------------------------
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoint_valid(mock_get):
+def test_get_deployment_valid(mock_get):
     mock_get.return_value = {
         "code": 10000,
         "message": "success",
@@ -29,27 +29,27 @@ def test_get_endpoint_valid(mock_get):
 
 
 # ----------------------------------------
-# Test: endpoint_id is non-numeric → error
+# Test: deployment_id is non-numeric → error
 # ----------------------------------------
-def test_get_endpoint_invalid_id_type():
+def test_get_deployment_invalid_id_type():
     api = ElasticApi("key")
     with pytest.raises(ValueError):
         api.get_endpoint("abc")    # must be numeric
 
 
 # ----------------------------------------
-# Test: endpoint_id is negative → error
+# Test: deployment_id is negative → error
 # ----------------------------------------
-def test_get_endpoint_negative_id():
+def test_get_deployment_negative_id():
     api = ElasticApi("key")
     with pytest.raises(ValueError):
         api.get_endpoint(-5)
 
 
 # ----------------------------------------
-# Test: endpoint_id is missing (None) → error
+# Test: deployment_id is missing (None) → error
 # ----------------------------------------
-def test_get_endpoint_none_id():
+def test_get_deployment_none_id():
     api = ElasticApi("key")
     with pytest.raises(ParameterRequiredError):
         api.get_endpoint(None)
@@ -59,7 +59,7 @@ def test_get_endpoint_none_id():
 # Test: get_endpoint should forward raw http_get response without modification
 # ----------------------------------------
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoint_response_passthrough(mock_get):
+def test_get_deployment_response_passthrough(mock_get):
     expected = {
         "code": 12345,
         "message": "custom",

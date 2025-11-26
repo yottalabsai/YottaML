@@ -67,7 +67,7 @@ def main():
         resp = client.get_endpoints(status_list=status_list)
         if resp.get("code") == 10000:
             logging.info("Fetched deployments successfully")
-            display_endpoint_list(resp)
+            display_deployment_list(resp)
         else:
             logging.warning("Unexpected code=%s message=%s", resp.get("code"), resp.get("message"))
     except ClientError as e:
@@ -75,24 +75,25 @@ def main():
     except Exception as e:
         logging.error("Unexpected error: %s", e)
 
-def display_endpoint_row(item: dict) -> None:
+
+def display_deployment_row(item: dict) -> None:
     """
-    Display a single elastic endpoint in table row format.
+    Display a single elastic deployment in table row format.
     """
-    endpoint_id = str(item.get("id", ""))
+    deployment_id = str(item.get("id", ""))
     name = str(item.get("name", ""))
     status = str(item.get("status", ""))
     workers = f"{item.get('runningWorkers')}/{item.get('totalWorkers')}"
 
     # 这里给每一列固定宽度，后面一列对齐一列
     logging.info(
-        f"{endpoint_id:<20} | {name:<28} | {status:<10} | {workers:<9}"
+        f"{deployment_id:<20} | {name:<28} | {status:<10} | {workers:<9}"
     )
 
 
-def display_endpoint_list(resp: dict) -> None:
+def display_deployment_list(resp: dict) -> None:
     """
-    Pretty print elastic endpoints in a simple table.
+    Pretty print elastic deployments in a simple table.
     """
     items = resp.get("data") or []
     if not items:
@@ -107,7 +108,7 @@ def display_endpoint_list(resp: dict) -> None:
     logging.info("-" * 80)
 
     for item in items:
-        display_endpoint_row(item)
+        display_deployment_row(item)
 
     logging.info("-" * 80)
     logging.info("Total: %s", len(items))
