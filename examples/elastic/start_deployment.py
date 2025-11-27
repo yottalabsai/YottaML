@@ -17,7 +17,7 @@ def main():
         # Example pod ID to retrieve - replace with your actual pod ID
         deployment_id = 384425425995034706
 
-        resp = client.run_deployment(deployment_id)
+        resp = client.start_deployment(deployment_id)
         if resp.get("code") == 10000:
             logging.info("Elastic deployment %s started", deployment_id)
         else:

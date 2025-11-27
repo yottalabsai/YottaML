@@ -25,13 +25,13 @@ def test_stop_deployment_success(mock_post, elastic_api):
 
 
 @patch.object(ElasticApi, "http_post")
-def test_run_deployment_success(mock_post, elastic_api):
+def test_start_deployment_success(mock_post, elastic_api):
     mock_post.return_value = {"code": 10000, "message": "success", "data": "384425425995034706"}
 
-    resp = elastic_api.run_deployment(384414489660887859)
+    resp = elastic_api.start_deployment(384414489660887859)
 
     mock_post.assert_called_once_with(
-        "/openapi/v1/elastic/deploy/384414489660887859/run",
+        "/openapi/v1/elastic/deploy/384414489660887859/start",
         payload=None,
     )
     assert resp["code"] == 10000
@@ -64,19 +64,19 @@ def test_delete_deployment_failed_action_not_allowed(mock_delete, elastic_api):
     assert resp["message"] == "Elastic action not allowed"
 
 
-def test_stop_run_delete_invalid_id(elastic_api):
+def test_stop_start_delete_invalid_id(elastic_api):
     for invalid in [0, -1]:
         with pytest.raises(ValueError):
             elastic_api.stop_deployment(invalid)
         with pytest.raises(ValueError):
-            elastic_api.run_deployment(invalid)
+            elastic_api.start_deployment(invalid)
         with pytest.raises(ValueError):
             elastic_api.delete_deployment(invalid)
 
     with pytest.raises(ParameterRequiredError):
         elastic_api.stop_deployment(None)
     with pytest.raises(ParameterRequiredError):
-        elastic_api.run_deployment(None)
+        elastic_api.start_deployment(None)
     with pytest.raises(ParameterRequiredError):
         elastic_api.delete_deployment(None)
 

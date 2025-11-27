@@ -241,15 +241,15 @@ class ElasticApi(API):
         url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/stop"
         return self.http_post(url_path, payload=None)
 
-    def run_deployment(self, deployment_id: Union[int, str]):
-        """Run a specific Elastic Deployment.
+    def start_deployment(self, deployment_id: Union[int, str]):
+        """Start or resume a specific Elastic Deployment.
 
-        POST /openapi/v1/elastic/deploy/{id}/run
+        POST /openapi/v1/elastic/deploy/{id}/start
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/run"
+        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/start"
         return self.http_post(url_path, payload=None)
 
     def delete_deployment(self, deployment_id: Union[int, str]):
