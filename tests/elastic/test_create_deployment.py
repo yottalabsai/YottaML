@@ -75,33 +75,60 @@ def test_create_deployment_missing_required(elastic_api):
         elastic_api.create_deployment(
             name=None,
             image="img",
-            image_registry="reg",
             resources=resources,
             workers=1,
             service_mode="ALB",
-            credential_id=1,
+            container_volume_in_gb=120,
         )
 
     with pytest.raises(ParameterRequiredError):
         elastic_api.create_deployment(
             name="n",
             image=None,
-            image_registry="reg",
             resources=resources,
             workers=1,
             service_mode="ALB",
-            credential_id=1,
+            container_volume_in_gb=120,
         )
 
     with pytest.raises(ParameterRequiredError):
         elastic_api.create_deployment(
             name="n",
             image="img",
-            image_registry=None,
+            resources=None,
+            workers=1,
+            service_mode="ALB",
+            container_volume_in_gb=120,
+        )
+
+    with pytest.raises(ParameterRequiredError):
+        elastic_api.create_deployment(
+            name="n",
+            image="img",
+            resources=resources,
+            workers=None,
+            service_mode="ALB",
+            container_volume_in_gb=120,
+        )
+
+    with pytest.raises(ParameterRequiredError):
+        elastic_api.create_deployment(
+            name="n",
+            image="img",
+            resources=resources,
+            workers=1,
+            service_mode=None,
+            container_volume_in_gb=120,
+        )
+
+    with pytest.raises(ParameterRequiredError):
+        elastic_api.create_deployment(
+            name="n",
+            image="img",
             resources=resources,
             workers=1,
             service_mode="ALB",
-            credential_id=1,
+            container_volume_in_gb=None,
         )
 
 
@@ -118,11 +145,10 @@ def test_create_deployment_invalid_workers(elastic_api):
         elastic_api.create_deployment(
             name="n",
             image="img",
-            image_registry="reg",
             resources=resources,
             workers=0,
             service_mode="ALB",
-            credential_id=1,
+            container_volume_in_gb=120,
         )
 
 
@@ -150,11 +176,10 @@ def test_create_deployment_client_error(elastic_api):
             elastic_api.create_deployment(
                 name="n",
                 image="img",
-                image_registry="reg",
                 resources=resources,
                 workers=1,
                 service_mode="ALB",
-                credential_id=1,
+                container_volume_in_gb=120,
             )
 
         assert exc_info.value.status_code == 400

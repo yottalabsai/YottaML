@@ -26,15 +26,15 @@ class ElasticApi(API):
         self,
         name: str,
         image: str,
-        image_registry: str,
         resources: List[dict],
         workers: int,
         service_mode: str,
-        credential_id: Union[int, str],
+        container_volume_in_gb: int,
+        image_registry: Optional[str] = None,
+        credential_id: Optional[Union[int, str]] = None,
         min_single_card_vram_in_gb: Optional[int] = None,
         min_single_card_vcpu: Optional[int] = None,
         min_single_card_ram_in_gb: Optional[int] = None,
-        container_volume_in_gb: Optional[int] = None,
         initialization_command: Optional[str] = None,
         environment_vars: Optional[List[dict]] = None,
         expose: Optional[List[dict]] = None,
@@ -47,15 +47,15 @@ class ElasticApi(API):
         Args:
             name (str): Deployment name.
             image (str): Container image.
-            image_registry (str): Image registry URL, e.g. https://index.docker.io/v1.
             resources (List[dict]): Resource list, each with region/gpuType/gpuCount.
             workers (int): Initial workers count (must be positive).
             service_mode (str): Service mode, e.g. "ALB".
-            credential_id (int|str): Credential ID used by this deployment.
+            container_volume_in_gb (int): Container volume size in GB.
+            image_registry (str, optional): Image registry URL, e.g. https://index.docker.io/v1.
+            credential_id (int|str, optional): Credential ID used by this deployment.
             min_single_card_vram_in_gb (int, optional): Minimum single-card VRAM in GB.
             min_single_card_vcpu (int, optional): Minimum single-card vCPU count.
             min_single_card_ram_in_gb (int, optional): Minimum single-card RAM in GB.
-            container_volume_in_gb (int, optional): Container volume size in GB.
             initialization_command (str, optional): Container initialization command.
             environment_vars (List[dict], optional): Environment variables list.
             expose (List[dict], optional): Exposed ports configuration.
@@ -64,19 +64,15 @@ class ElasticApi(API):
             [
                 [name, "name"],
                 [image, "image"],
-                [image_registry, "image_registry"],
                 [resources, "resources"],
                 [workers, "workers"],
                 [service_mode, "service_mode"],
-                [credential_id, "credential_id"],
+                [container_volume_in_gb, "container_volume_in_gb"],
             ]
         )
 
         if not isinstance(workers, int) or workers <= 0:
             raise ValueError("workers must be a positive integer")
-
-        # Validate credential_id is positive integer-like
-        check_is_positive_int(credential_id, "credential_id")
 
         payload = clean_none_value(
             {
@@ -186,10 +182,11 @@ class ElasticApi(API):
         name: str,
         resources: List[dict],
         workers: int,
+        container_volume_in_gb: int,
+        credential_id: Optional[Union[int, str]] = None,
         min_single_card_vram_in_gb: Optional[int] = None,
         min_single_card_vcpu: Optional[int] = None,
         min_single_card_ram_in_gb: Optional[int] = None,
-        container_volume_in_gb: Optional[int] = None,
         initialization_command: Optional[str] = None,
         environment_vars: Optional[List[dict]] = None,
         expose: Optional[List[dict]] = None,
@@ -206,6 +203,7 @@ class ElasticApi(API):
                 [name, "name"],
                 [resources, "resources"],
                 [workers, "workers"],
+                [container_volume_in_gb, "container_volume_in_gb"],
             ]
         )
 
@@ -220,6 +218,7 @@ class ElasticApi(API):
                 "minSingleCardVcpu": min_single_card_vcpu,
                 "minSingleCardRamInGb": min_single_card_ram_in_gb,
                 "workers": workers,
+                "credentialId": credential_id,
                 "containerVolumeInGb": container_volume_in_gb,
                 "initializationCommand": initialization_command,
                 "environmentVars": environment_vars,

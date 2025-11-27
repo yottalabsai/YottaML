@@ -71,6 +71,7 @@ def test_update_deployment_missing_required(elastic_api):
             name=None,
             resources=resources,
             workers=1,
+            container_volume_in_gb = 120,
         )
 
     with pytest.raises(ParameterRequiredError):
@@ -79,6 +80,25 @@ def test_update_deployment_missing_required(elastic_api):
             name="name",
             resources=None,
             workers=1,
+            container_volume_in_gb = 120,
+        )
+
+    with pytest.raises(ParameterRequiredError):
+        elastic_api.update_deployment(
+            deployment_id=384414489660887859,
+            name="name",
+            resources=resources,
+            workers=None,
+            container_volume_in_gb = 120,
+        )
+
+    with pytest.raises(ParameterRequiredError):
+        elastic_api.update_deployment(
+            deployment_id=384414489660887859,
+            name="name",
+            resources=resources,
+            workers=1,
+            container_volume_in_gb = None,
         )
 
 
@@ -97,6 +117,7 @@ def test_update_deployment_invalid_workers(elastic_api):
             name="n",
             resources=resources,
             workers=0,
+            container_volume_in_gb=120,
         )
 
 
@@ -126,6 +147,7 @@ def test_update_deployment_client_error(elastic_api):
                 name="n",
                 resources=resources,
                 workers=1,
+                container_volume_in_gb=120,
             )
 
         assert exc_info.value.status_code == 400
