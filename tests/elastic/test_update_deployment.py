@@ -5,11 +5,15 @@ import pytest
 from yotta.elastic import ElasticApi
 from yotta.error import ClientError, ParameterRequiredError
 
-
 MOCK_UPDATE_RESPONSE = {
     "code": 10000,
     "message": "success",
-    "data": "384425425995034706",
+    "data": {
+        "id": "384414489660887859",
+        "name": "Llama-3.2-3B",
+        "image": "vllm/vllm-openai:latest",
+        "status": "STOPPED",
+    },
 }
 
 
@@ -71,7 +75,7 @@ def test_update_deployment_missing_required(elastic_api):
             name=None,
             resources=resources,
             workers=1,
-            container_volume_in_gb = 120,
+            container_volume_in_gb=120,
         )
 
     with pytest.raises(ParameterRequiredError):
@@ -80,7 +84,7 @@ def test_update_deployment_missing_required(elastic_api):
             name="name",
             resources=None,
             workers=1,
-            container_volume_in_gb = 120,
+            container_volume_in_gb=120,
         )
 
     with pytest.raises(ParameterRequiredError):
@@ -89,7 +93,7 @@ def test_update_deployment_missing_required(elastic_api):
             name="name",
             resources=resources,
             workers=None,
-            container_volume_in_gb = 120,
+            container_volume_in_gb=120,
         )
 
     with pytest.raises(ParameterRequiredError):
@@ -98,7 +102,7 @@ def test_update_deployment_missing_required(elastic_api):
             name="name",
             resources=resources,
             workers=1,
-            container_volume_in_gb = None,
+            container_volume_in_gb=None,
         )
 
 
@@ -131,15 +135,15 @@ def test_update_deployment_client_error(elastic_api):
     ]
 
     with patch.object(
-        elastic_api,
-        "http_post",
-        side_effect=ClientError(
-            status_code=400,
-            error_code=20002,
-            error_message="Update elastic deployment failed",
-            header={},
-            error_data=None,
-        ),
+            elastic_api,
+            "http_post",
+            side_effect=ClientError(
+                status_code=400,
+                error_code=20002,
+                error_message="Update elastic deployment failed",
+                header={},
+                error_data=None,
+            ),
     ):
         with pytest.raises(ClientError) as exc_info:
             elastic_api.update_deployment(
@@ -153,5 +157,3 @@ def test_update_deployment_client_error(elastic_api):
         assert exc_info.value.status_code == 400
         assert exc_info.value.error_code == 20002
         assert "Update elastic deployment failed" in str(exc_info.value.error_message)
-
-

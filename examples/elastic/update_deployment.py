@@ -54,7 +54,10 @@ def main():
 
         if resp.get("code") == 10000:
             logging.info("Elastic deployment updated successfully")
-            logging.info("Deployment ID: %s", resp.get("data"))
+            detail = resp.get("data") or {}
+            logging.info("Deployment detail:")
+            for k, v in detail.items():
+                logging.info(f"{k:25}: {v}")
         else:
             logging.warning("Unexpected code=%s message=%s", resp.get("code"), resp.get("message"))
     except ClientError as e:

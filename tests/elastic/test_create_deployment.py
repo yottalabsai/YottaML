@@ -5,11 +5,15 @@ import pytest
 from yotta.elastic import ElasticApi
 from yotta.error import ClientError, ParameterRequiredError
 
-
 MOCK_CREATE_RESPONSE = {
     "code": 10000,
     "message": "success",
-    "data": "384425425995034706",
+    "data": {
+        "id": "384414489660887859",
+        "name": "Llama-3.2-3B",
+        "image": "vllm/vllm-openai:latest",
+        "status": "INITIALIZING",
+    },
 }
 
 
@@ -162,15 +166,15 @@ def test_create_deployment_client_error(elastic_api):
     ]
 
     with patch.object(
-        elastic_api,
-        "http_post",
-        side_effect=ClientError(
-            status_code=400,
-            error_code=20001,
-            error_message="Create elastic deployment failed",
-            header={},
-            error_data=None,
-        ),
+            elastic_api,
+            "http_post",
+            side_effect=ClientError(
+                status_code=400,
+                error_code=20001,
+                error_message="Create elastic deployment failed",
+                header={},
+                error_data=None,
+            ),
     ):
         with pytest.raises(ClientError) as exc_info:
             elastic_api.create_deployment(
@@ -185,5 +189,3 @@ def test_create_deployment_client_error(elastic_api):
         assert exc_info.value.status_code == 400
         assert exc_info.value.error_code == 20001
         assert "Create elastic deployment failed" in str(exc_info.value.error_message)
-
-

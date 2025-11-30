@@ -13,7 +13,7 @@ def elastic_api():
 
 @patch.object(ElasticApi, "http_post")
 def test_stop_deployment_success(mock_post, elastic_api):
-    mock_post.return_value = {"code": 10000, "message": "success", "data": "384425425995034706"}
+    mock_post.return_value = {"code": 10000, "message": "success", "data": None}
 
     resp = elastic_api.stop_deployment(384414489660887859)
 
@@ -26,7 +26,7 @@ def test_stop_deployment_success(mock_post, elastic_api):
 
 @patch.object(ElasticApi, "http_post")
 def test_start_deployment_success(mock_post, elastic_api):
-    mock_post.return_value = {"code": 10000, "message": "success", "data": "384425425995034706"}
+    mock_post.return_value = {"code": 10000, "message": "success", "data": None}
 
     resp = elastic_api.start_deployment(384414489660887859)
 
@@ -83,15 +83,15 @@ def test_stop_start_delete_invalid_id(elastic_api):
 
 def test_delete_deployment_client_error(elastic_api):
     with patch.object(
-        elastic_api,
-        "http_delete",
-        side_effect=ClientError(
-            status_code=200,
-            error_code=24002,
-            error_message="Elastic action not allowed",
-            header={},
-            error_data=None,
-        ),
+            elastic_api,
+            "http_delete",
+            side_effect=ClientError(
+                status_code=200,
+                error_code=24002,
+                error_message="Elastic action not allowed",
+                header={},
+                error_data=None,
+            ),
     ):
         with pytest.raises(ClientError) as exc_info:
             elastic_api.delete_deployment(384414489660887859)
@@ -99,5 +99,3 @@ def test_delete_deployment_client_error(elastic_api):
         assert exc_info.value.status_code == 200
         assert exc_info.value.error_code == 24002
         assert "Elastic action not allowed" in str(exc_info.value.error_message)
-
-
