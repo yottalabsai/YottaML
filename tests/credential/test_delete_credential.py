@@ -13,17 +13,15 @@ MOCK_SUCCESS_RESPONSE = {
 }
 
 MOCK_IN_USE_RESPONSE = {
-    "code": 25002,
-    "message": "Credential is in use and cannot be deleted.",
-    "data": {
-        "podList": [
-            {
-                "id": "384409266431202134",
-                "name": "Jupyter",
-            }
-        ],
-        "elasticList": [],
-    },
+  "code": 25002,
+  "message": "Credential is in use and cannot be deleted.",
+  "data": [
+    {
+      "type": "POD",
+      "id": "384409266431202134",
+      "name": "Jupyter"
+    }
+  ]
 }
 
 
@@ -52,8 +50,6 @@ def test_delete_credential_in_use(credential_api):
         response = credential_api.delete_credential(credential_id=credential_id)
 
         assert response == MOCK_IN_USE_RESPONSE
-        assert response["code"] == 25002
-        assert response["data"]["podList"]
         mock_delete.assert_called_once_with(f"/openapi/v1/credentials/{credential_id}", payload=None)
 
 
