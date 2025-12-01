@@ -23,7 +23,7 @@ from yotta.pod import PodApi
 client = PodApi(api_key='<api_key>')
 
 params = {
-    "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025050802",
+    "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025090101",
     "gpu_type": "NVIDIA_L4_24G",
     "gpu_count": 1,
     "expose": [
