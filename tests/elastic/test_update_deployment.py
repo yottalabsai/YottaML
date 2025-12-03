@@ -45,7 +45,7 @@ def test_update_deployment_success(mock_post, elastic_api):
         container_volume_in_gb=20,
         initialization_command="echo update",
         environment_vars=[{"key": "CUDA_VISIBLE_DEVICES", "value": "1"}],
-        expose=[{"port": 8000, "protocol": "http"}],
+        expose={"port": 8000, "protocol": "http"},
     )
 
     mock_post.assert_called_once()

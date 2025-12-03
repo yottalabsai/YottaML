@@ -47,10 +47,7 @@ def main():
                 {"key": "VLLM_PORT", "value": "8000"},
                 {"key": "CUDA_VISIBLE_DEVICES", "value": "0"},
             ],
-            expose=[
-                {"port": 22, "protocol": "SSH"},
-                {"port": 8000, "protocol": "http"},
-            ],
+            expose={"port": 8000, "protocol": "http"},
         )
 
         if resp.get("code") == 10000:

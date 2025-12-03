@@ -37,7 +37,7 @@ class ElasticApi(API):
         min_single_card_ram_in_gb: Optional[int] = None,
         initialization_command: Optional[str] = None,
         environment_vars: Optional[List[dict]] = None,
-        expose: Optional[List[dict]] = None,
+        expose: Optional[dict] = None,
     ):
         """
         Create Elastic Deployment.
@@ -58,7 +58,7 @@ class ElasticApi(API):
             min_single_card_ram_in_gb (int, optional): Minimum single-card RAM in GB.
             initialization_command (str, optional): Container initialization command.
             environment_vars (List[dict], optional): Environment variables list.
-            expose (List[dict], optional): Exposed ports configuration.
+            expose (dict, optional): Exposed port configuration.
         """
         check_required_parameters(
             [
@@ -189,7 +189,7 @@ class ElasticApi(API):
         min_single_card_ram_in_gb: Optional[int] = None,
         initialization_command: Optional[str] = None,
         environment_vars: Optional[List[dict]] = None,
-        expose: Optional[List[dict]] = None,
+        expose: Optional[dict] = None,
     ):
         """
         Update Elastic Deployment.

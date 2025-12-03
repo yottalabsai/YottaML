@@ -48,7 +48,7 @@ def test_create_deployment_success(mock_post, elastic_api):
         container_volume_in_gb=20,
         initialization_command="vllm serve meta-llama/Llama-3.2-3B-Instruct --served-model-name meta-llama/Llama-3.2-3B-Instruct  --max-model-len 20480 --port 8000 --dtype half --gpu-memory-utilization 0.90 --tensor-parallel-size 1 --chat-template /vllm-workspace/examples/tool_chat_template_llama3.2_json.jinja",
         environment_vars=[{"key": "VLLM_PORT", "value": "8000"}],
-        expose=[{"port": 8000, "protocol": "HTTP"}],
+        expose={"port": 8000, "protocol": "HTTP"},
     )
 
     mock_post.assert_called_once()
