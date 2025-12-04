@@ -1,8 +1,9 @@
 # Yottalabs Public API Connector (Python)
 
-A lightweight Python library for connecting to the [Yottalabs public API](https://api.yottalabs.ai).  
-Easily interact with `/openapi/v1/*` endpoints, with support for custom base URLs, request timeouts, HTTP proxies, and more.
-
+A lightweight Python library for connecting to
+the [Yottalabs public API](https://docs.yottalabs.ai/yotta-labs/api-and-sdk/api-spec).  
+Easily interact with `/openapi/v1/*` endpoints, with support for custom base URLs, request timeouts, HTTP proxies, and
+more.
 
 ## Requirements
 
@@ -23,7 +24,7 @@ from yotta.pod import PodApi
 client = PodApi(api_key='<api_key>')
 
 params = {
-    "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025050802",
+    "image": "yottalabsai/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04-2025090101",
     "gpu_type": "NVIDIA_L4_24G",
     "gpu_count": 1,
     "expose": [
@@ -33,17 +34,6 @@ params = {
 
 response = client.new_pod(**params)
 print(response)
-```
-
-See the [`examples/`](examples/) folder for more usage examples.
-
-## Configuration
-
-To use the example scripts, create a `examples/config.ini` file with your API key:
-
-```ini
-[keys]
-api_key=YOUR_API_KEY_HERE
 ```
 
 ## Customization
@@ -72,11 +62,11 @@ Two types of errors are raised:
 
 - `yotta.error.ClientError`  
   Raised for 4XX client errors. Properties:
-  - `status_code`: HTTP status code
-  - `error_code`: Server error code (if available)
-  - `error_message`: Server error message
-  - `header`: Full response headers
-  - `error_data`: Additional data (if provided)
+    - `status_code`: HTTP status code
+    - `error_code`: Server error code (if available)
+    - `error_message`: Server error message
+    - `header`: Full response headers
+    - `error_data`: Additional data (if provided)
 
 - `yotta.error.ServerError`  
   Raised for 5XX server errors.

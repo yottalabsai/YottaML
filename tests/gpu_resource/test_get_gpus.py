@@ -22,7 +22,7 @@ def test_gpu_list_success(gpu_api):
     with patch.object(gpu_api, "http_post", return_value=mock_response) as mock_post:
         resp = gpu_api.get_gpus(payload)
         assert resp == mock_response
-        mock_post.assert_called_once_with("/openapi/v1/gpu/list", payload=payload)
+        mock_post.assert_called_once_with("/openapi/v1/gpus/list", payload=payload)
         assert resp["data"][0]["gpuType"] == "NVIDIA_L4"
 
 
@@ -32,7 +32,7 @@ def test_gpu_list_multiple_pages(gpu_api):
     with patch.object(gpu_api, "http_post", return_value={"code": 10000, "data": []}) as mock_post:
         gpu_api.get_gpus(payload)
         called_path, called_kwargs = mock_post.call_args
-        assert called_path[0].endswith("/gpu/list")
+        assert called_path[0].endswith("/gpus/list")
         assert called_kwargs["payload"]["page"] == 2
         assert called_kwargs["payload"]["size"] == 20
 
