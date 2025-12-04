@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import os
+import argparse
 import json
 import logging
-import argparse
+import os
 
 from examples.utils.prepare_env import get_api_key, get_endpoint_id
 from yotta.error import ClientError
@@ -50,7 +50,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_status_arg(status_arg: str | None):
+def parse_status_arg(status_arg: str = None):
     """
     Parse --status argument into TaskStatus or int or None.
     Accepts:
