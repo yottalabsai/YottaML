@@ -106,11 +106,6 @@ class SkywalkerTaskApi(API):
       4) List Tasks (paged)
          GET  /openapi/v1/skywalker/tasks
 
-    Rate limits:
-      - Skywalker applies per-endpoint and global rate limits.
-      - These limits are configurable on the backend and may change over time.
-      - For the latest rate-limit rules, please refer to the official Yotta API documentation.
-
     Required headers:
       - X-API-Key      : provided by API base
       - X-Endpoint-ID  : required per request (Elastic Deployment id)
@@ -135,10 +130,6 @@ class SkywalkerTaskApi(API):
         (idempotent on userTaskId within the same endpoint).
 
         POST /openapi/v1/skywalker/tasks/create
-
-        Rate limits:
-          - Rate limiting is enforced server-side and may be adjusted dynamically.
-          - For the latest QPS and queue constraints, see the official API docs.
 
         Headers:
           X-Endpoint-ID : required (this method's `endpoint_id`)
@@ -197,10 +188,6 @@ class SkywalkerTaskApi(API):
 
         GET /openapi/v1/skywalker/tasks/{id}
 
-        Rate limits:
-          - Subject to Skywalker read rate limits (per-endpoint + global).
-          - Exact limits are controlled by backend configuration; see API docs for details.
-
         Headers:
           X-Endpoint-ID : required
 
@@ -234,10 +221,6 @@ class SkywalkerTaskApi(API):
         Get number of tasks currently queued + processing for the endpoint.
 
         GET /openapi/v1/skywalker/tasks/processing/count
-
-        Rate limits:
-          - Uses the same read rate limits as other Skywalker GET endpoints.
-          - See the official API documentation for current constraints.
 
         Headers:
           X-Endpoint-ID : required
@@ -276,11 +259,6 @@ class SkywalkerTaskApi(API):
           - status   : optional, 0..3  (PROCESSING=0, DELIVERED=1, SUCCESS=2, FAILED=3)
           - page     : default 1 (>=1)
           - pageSize : default 10 (>=1)
-
-        Rate limits:
-          - This endpoint is subject to Skywalker list/read rate limits.
-          - The exact numeric thresholds are defined by backend configuration.
-          - Refer to the official Yotta API documentation for the latest values.
 
         Headers:
           X-Endpoint-ID : required
