@@ -196,6 +196,20 @@ class ElasticApi(API):
         Update Elastic Deployment.
 
         POST /openapi/v1/elastic/deploy/{id}/update
+
+        Args:
+            deployment_id (int|str): Deployment ID.
+            name (str): Deployment name.
+            resources (List[dict]): Resource list, each with region/gpuType/gpuCount.
+            workers (int): Initial workers count (must be positive).
+            container_volume_in_gb (int): Container volume size in GB.
+            credential_id (int|str, optional): Credential ID used by this deployment.
+            min_single_card_vram_in_gb (int, optional): Minimum single-card VRAM in GB.
+            min_single_card_vcpu (int, optional): Minimum single-card vCPU count.
+            min_single_card_ram_in_gb (int, optional): Minimum single-card RAM in GB.
+            initialization_command (str, optional): Container initialization command.
+            environment_vars (List[dict], optional): Environment variables list.
+            expose (dict, optional): Exposed port configuration.
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
