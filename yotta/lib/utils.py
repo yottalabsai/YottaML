@@ -11,6 +11,10 @@ from yotta.error import (
 )
 
 
+# Sentinel object to distinguish between "not provided" and "explicitly None"
+_UNSET = object()
+
+
 def clean_none_value(d) -> dict:
     out = {}
     for k in d.keys():

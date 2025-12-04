@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
 from yotta import API
 from yotta.lib.enums import ElasticDeploymentStatusEnum
 from yotta.lib.utils import (
@@ -7,6 +7,7 @@ from yotta.lib.utils import (
     check_required_parameters,
     check_is_positive_int,
     clean_none_value,
+    _UNSET,
 )
 
 class ElasticApi(API):
@@ -183,13 +184,13 @@ class ElasticApi(API):
         resources: List[dict],
         workers: int,
         container_volume_in_gb: int,
-        credential_id: Optional[Union[int, str]] = None,
-        min_single_card_vram_in_gb: Optional[int] = None,
-        min_single_card_vcpu: Optional[int] = None,
-        min_single_card_ram_in_gb: Optional[int] = None,
-        initialization_command: Optional[str] = None,
-        environment_vars: Optional[List[dict]] = None,
-        expose: Optional[dict] = None,
+        credential_id: Any = _UNSET,
+        min_single_card_vram_in_gb: Any = _UNSET,
+        min_single_card_vcpu: Any = _UNSET,
+        min_single_card_ram_in_gb: Any = _UNSET,
+        initialization_command: Any = _UNSET,
+        environment_vars: Any = _UNSET,
+        expose: Any = _UNSET,
     ):
         """
         Update Elastic Deployment.
@@ -210,21 +211,30 @@ class ElasticApi(API):
         if not isinstance(workers, int) or workers <= 0:
             raise ValueError("workers must be a positive integer")
 
-        payload = clean_none_value(
-            {
-                "name": name,
-                "resources": resources,
-                "minSingleCardVramInGb": min_single_card_vram_in_gb,
-                "minSingleCardVcpu": min_single_card_vcpu,
-                "minSingleCardRamInGb": min_single_card_ram_in_gb,
-                "workers": workers,
-                "credentialId": credential_id,
-                "containerVolumeInGb": container_volume_in_gb,
-                "initializationCommand": initialization_command,
-                "environmentVars": environment_vars,
-                "expose": expose,
-            }
-        )
+        # Build payload with required fields
+        payload = {
+            "name": name,
+            "resources": resources,
+            "workers": workers,
+            "containerVolumeInGb": container_volume_in_gb,
+        }
+
+        # Add optional fields only if they were provided (not _UNSET)
+        # This includes None values if explicitly passed
+        if credential_id is not _UNSET:
+            payload["credentialId"] = credential_id
+        if min_single_card_vram_in_gb is not _UNSET:
+            payload["minSingleCardVramInGb"] = min_single_card_vram_in_gb
+        if min_single_card_vcpu is not _UNSET:
+            payload["minSingleCardVcpu"] = min_single_card_vcpu
+        if min_single_card_ram_in_gb is not _UNSET:
+            payload["minSingleCardRamInGb"] = min_single_card_ram_in_gb
+        if initialization_command is not _UNSET:
+            payload["initializationCommand"] = initialization_command
+        if environment_vars is not _UNSET:
+            payload["environmentVars"] = environment_vars
+        if expose is not _UNSET:
+            payload["expose"] = expose
 
         url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/update"
         return self.http_post(url_path, payload=payload)

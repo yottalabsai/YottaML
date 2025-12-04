@@ -56,7 +56,7 @@ def test_get_deployment_none_id():
 
 
 # ----------------------------------------
-# Test: get_endpoint should forward raw http_get response without modification
+# Test: get_deployment_detail should forward raw http_get response without modification
 # ----------------------------------------
 @patch.object(ElasticApi, "http_get")
 def test_get_deployment_response_passthrough(mock_get):

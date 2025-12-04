@@ -31,7 +31,7 @@ MOCK_DATA = [
 #   - returned data fields are preserved and accessible
 # ======================================================
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoints_with_status(mock_get):
+def test_get_deployments_with_status(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": MOCK_DATA}
 
     api = ElasticApi("test-key", base_url="https://api.dev.yottalabs.ai")
@@ -43,7 +43,7 @@ def test_get_endpoints_with_status(mock_get):
     path = mock_get.call_args[0][0]
     payload = mock_get.call_args[1].get("payload")
 
-    # Verify correct deployment list path
+    # Verify correct deployment path
     assert path == "/openapi/v1/elastic/deploy/list"
 
     # Verify payload contains normalized CSV status list
@@ -62,7 +62,7 @@ def test_get_endpoints_with_status(mock_get):
 #   - Backend receives a clean query without `statusList`
 # ======================================================
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoints_empty_status(mock_get):
+def test_get_deployments_empty_status(mock_get):
     mock_get.return_value = {"code": 10000, "message": "ok", "data": []}
 
     api = ElasticApi("test-key")
@@ -84,7 +84,7 @@ def test_get_endpoints_empty_status(mock_get):
 #   - The payload uses plain comma-separated uppercase values
 # ======================================================
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoints_alias_active(mock_get):
+def test_get_deployments_alias_active(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": []}
 
     api = ElasticApi("test-key")
@@ -101,11 +101,11 @@ def test_get_endpoints_alias_active(mock_get):
 # ======================================================
 # Test 4 — Verify returned `data` structure is preserved
 # Ensures:
-#   - get_endpoints returns the backend `data` field verbatim
+#   - get_deployments returns the backend `data` field verbatim
 #   - no unexpected mutation or filtering occurs on the client side
 # ======================================================
 @patch.object(ElasticApi, "http_get")
-def test_get_endpoints_result_data_integrity(mock_get):
+def test_get_deployments_result_data_integrity(mock_get):
     mock_get.return_value = {"code": 10000, "message": "success", "data": MOCK_DATA}
 
     api = ElasticApi("key")
