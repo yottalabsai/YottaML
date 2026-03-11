@@ -5,9 +5,9 @@ import logging
 import os
 
 from examples.utils.prepare_env import get_api_key, get_endpoint_id
-from yotta.error import ClientError
-from yotta.lib.utils import config_logging
-from yotta.skywalker import SkywalkerTaskApi, TaskStatus
+from yottaml.error import ClientError
+from yottaml.lib.utils import config_logging
+from yottaml.skywalker import SkywalkerTaskApi, TaskStatus
 
 
 def parse_args() -> argparse.Namespace:

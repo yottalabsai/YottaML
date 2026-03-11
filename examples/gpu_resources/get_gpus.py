@@ -2,9 +2,9 @@
 import json
 import logging
 from examples.utils.prepare_env import get_api_key
-from yotta.lib.utils import config_logging
-from yotta.gpu import GpuApi
-from yotta.error import ClientError
+from yottaml.lib.utils import config_logging
+from yottaml.gpu import GpuApi
+from yottaml.error import ClientError
 
 
 def main():

@@ -2,7 +2,7 @@ import os
 import time
 import pytest
 
-from yotta.skywalker import SkywalkerTaskApi
+from yottaml.skywalker import SkywalkerTaskApi
 
 
 @pytest.mark.integration
@@ -22,7 +22,7 @@ def test_create_task_success_integration():
 
     api = SkywalkerTaskApi(api_key=api_key, base_url=base_url)
 
-    user_task_id = f"test_{int(time.time())}"
+    task_id = f"test_{int(time.time())}"
 
     payload = {
         "temperature": 0.5,
@@ -35,29 +35,29 @@ def test_create_task_success_integration():
 
     resp = api.create_task(
         endpoint_id=endpoint_id,
-        user_task_id=user_task_id,
+        task_id=task_id,
         worker_port=8000,
         process_uri="/v1/chat/completions",
-        task_data=payload,
+        input=payload,
     )
 
     assert isinstance(resp, dict)
     assert resp.get("code") == 10000
-    assert resp.get("data", {}).get("userTaskId") == user_task_id
+    assert resp.get("data", {}).get("taskId") == task_id
 
 
-def test_create_task_invalid_user_task_id():
-    """Test invalid userTaskId patterns (allowed: letters, numbers, underscores)."""
+def test_create_task_invalid_task_id():
+    """Test invalid taskId patterns (allowed: letters, numbers, underscores)."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
     # invalid characters
     with pytest.raises(ValueError):
         api.create_task(
             endpoint_id=1,
-            user_task_id="bad-id-!",
+            task_id="bad-id-!",
             worker_port=8000,
             process_uri="/v1/chat/completions",
-            task_data={"foo": "bar"},
+            input={"foo": "bar"},
         )
 
     # too long (>255)
@@ -65,78 +65,75 @@ def test_create_task_invalid_user_task_id():
     with pytest.raises(ValueError):
         api.create_task(
             endpoint_id=1,
-            user_task_id=too_long,
+            task_id=too_long,
             worker_port=8000,
             process_uri="/v1/chat/completions",
-            task_data={"foo": "bar"},
+            input={"foo": "bar"},
         )
 
 
-def test_create_task_invalid_port_and_url():
-    """Test workerPort range and notifyUrl format validation."""
+def test_create_task_invalid_port_and_webhook():
+    """Test workerPort range and webhook URL format validation."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
     with pytest.raises(ValueError):
         api.create_task(
             endpoint_id=1,
-            user_task_id="task_1",
+            task_id="task_1",
             worker_port=0,
             process_uri="/v1/chat/completions",
-            task_data={"foo": "bar"},
+            input={"foo": "bar"},
         )
 
     with pytest.raises(ValueError):
         api.create_task(
             endpoint_id=1,
-            user_task_id="task_1",
+            task_id="task_1",
             worker_port=70000,
             process_uri="/v1/chat/completions",
-            task_data={"foo": "bar"},
+            input={"foo": "bar"},
         )
 
-    # invalid notifyUrl
+    # invalid webhook URL
     with pytest.raises(ValueError):
         api.create_task(
             endpoint_id=1,
-            user_task_id="task_1",
+            task_id="task_1",
             worker_port=8000,
             process_uri="/v1/chat/completions",
-            notify_url="invalid-url",
-            task_data={"foo": "bar"},
+            webhook="invalid-url",
+            input={"foo": "bar"},
         )
 
 
-def test_create_task_header_and_process_uri_normalized(monkeypatch):
+def test_create_task_process_uri_normalized(monkeypatch):
     """
     Test:
       - processUri auto-normalizes (adds leading '/')
-      - X-Endpoint-ID header correctly applied
-      - header with valid structure is passed through
+      - correct path is used (/v2/serverless/{id}/tasks)
+      - headers kwarg is passed through in payload
     """
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
     captured = {}
 
-    def fake_post(path, payload, headers=None):
+    def fake_post(path, payload):
         captured["path"] = path
         captured["payload"] = payload
-        captured["headers"] = headers or {}
-        return {"code": 10000, "data": {"userTaskId": payload["userTaskId"]}}
+        return {"code": 10000, "data": {"taskId": payload.get("taskId")}}
 
     monkeypatch.setattr(api, "http_post", fake_post)
 
     resp = api.create_task(
         endpoint_id=123456,
-        user_task_id="task_abc",
+        task_id="task_abc",
         worker_port=8000,
         process_uri="v1/chat/completions",  # without leading slash
-        task_data={"foo": "bar"},
-        header={"X-Request-ID": "req-1"},
+        input={"foo": "bar"},
+        headers={"X-Request-ID": "req-1"},
     )
 
     assert resp["code"] == 10000
-    assert captured["path"] == "/openapi/v1/skywalker/tasks/create"
+    assert captured["path"] == "/v2/serverless/123456/tasks"
     assert captured["payload"]["processUri"] == "/v1/chat/completions"
-    assert captured["headers"]["X-Endpoint-ID"] == "123456"
-    assert captured["headers"]["Content-Type"] == "application/json"
-    assert captured["payload"]["header"]["X-Request-ID"] == "req-1"
+    assert captured["payload"]["headers"]["X-Request-ID"] == "req-1"

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
-from yotta.elastic import ElasticApi
-from yotta.error import ParameterRequiredError
+from yottaml.elastic import ElasticApi
+from yottaml.error import ParameterRequiredError
 
 
 # ----------------------------------------
@@ -19,7 +19,7 @@ def test_get_deployment_valid(mock_get):
     result = api.get_deployment_detail(123)
 
     # verify request path
-    mock_get.assert_called_once_with("/openapi/v1/elastic/deploy/123")
+    mock_get.assert_called_once_with("/v2/serverless/123")
 
     # verify returned structure
     assert result["code"] == 10000

@@ -2,9 +2,9 @@
 import logging
 
 from examples.utils.prepare_env import get_api_key
-from yotta.elastic import ElasticApi
-from yotta.error import ClientError
-from yotta.lib.utils import config_logging
+from yottaml.elastic import ElasticApi
+from yottaml.error import ClientError
+from yottaml.lib.utils import config_logging
 
 
 def main():

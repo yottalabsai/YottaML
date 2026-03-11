@@ -3,9 +3,9 @@
 import logging
 
 from examples.utils.prepare_env import get_api_key
-from yotta.error import ClientError
-from yotta.lib.utils import config_logging
-from yotta.pod import PodApi
+from yottaml.error import ClientError
+from yottaml.lib.utils import config_logging
+from yottaml.pod import PodApi
 
 
 def create_sample_pod(client, config):

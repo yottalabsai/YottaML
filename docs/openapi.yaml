@@ -1,0 +1,1903 @@
+openapi: 3.0.0
+
+info:
+  title: "Yotta SaaS Platform - OpenAPI v2 API"
+  description: "Yotta SaaS Platform API for managing VMs, Pods, Elastic Endpoints, and Volumes"
+  version: "2.0.0"
+  contact:
+    name: "Yotta Labs"
+    url: "https://yottalabs.ai"
+  license:
+    name: "Apache 2.0"
+
+servers:
+  - url: "https://api.yottalabs.ai"
+    description: "Production server"
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: "Container Registry Credentials"
+    description: "Manage container registry authentication credentials"
+  - name: "Virtual Machines"
+    description: "Manage virtual machines"
+  - name: "Pods"
+    description: "Manage containerized pods"
+  - name: "Elastic Endpoints"
+    description: "Manage serverless elastic endpoints"
+  - name: "Volumes"
+    description: "Manage storage volumes"
+
+paths:
+  /v2/container-registry-auths:
+    get:
+      tags:
+        - "Container Registry Credentials"
+      summary: "List All Credentials"
+      operationId: "listCredentials"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    post:
+      tags:
+        - "Container Registry Credentials"
+      summary: "Create Credential"
+      operationId: "createCredential"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCredentialRequest"
+      responses:
+        '200':
+          description: "Credential created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/container-registry-auths/{id}:
+    get:
+      tags:
+        - "Container Registry Credentials"
+      summary: "Get Credential by ID"
+      operationId: "getCredentialById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    patch:
+      tags:
+        - "Container Registry Credentials"
+      summary: "Update Credential (Partial)"
+      operationId: "updateCredential"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCredentialRequest"
+      responses:
+        '200':
+          description: "Credential updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - "Container Registry Credentials"
+      summary: "Delete Credential"
+      operationId: "deleteCredential"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Credential deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '409':
+          description: "Credential is in use by Pod or Endpoint"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/vms:
+    get:
+      tags:
+        - "Virtual Machines"
+      summary: "List VMs (Paginated)"
+      operationId: "listVMs"
+      parameters:
+        - name: "page"
+          in: "query"
+          description: "Page number (1-based)"
+          schema:
+            type: integer
+            default: 1
+        - name: "size"
+          in: "query"
+          description: "Page size"
+          schema:
+            type: integer
+            default: 10
+        - name: "status"
+          in: "query"
+          description: "Filter by status (e.g., running)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VMListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    post:
+      tags:
+        - "Virtual Machines"
+      summary: "Create VM"
+      operationId: "createVM"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVMRequest"
+      responses:
+        '200':
+          description: "VM created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VMResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/vms/{id}:
+    get:
+      tags:
+        - "Virtual Machines"
+      summary: "Get VM by ID"
+      operationId: "getVMById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VMResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    patch:
+      tags:
+        - "Virtual Machines"
+      summary: "Update VM (Rename)"
+      operationId: "updateVM"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVMRequest"
+      responses:
+        '200':
+          description: "VM updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VMResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - "Virtual Machines"
+      summary: "Terminate VM"
+      operationId: "terminateVM"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "VM terminated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/vms/types:
+    get:
+      tags:
+        - "Virtual Machines"
+      summary: "Get VM Types"
+      operationId: "getVMTypes"
+      description: "Returns all available GPU types and their availability by region"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VMTypesResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/pods:
+    get:
+      tags:
+        - "Pods"
+      summary: "List Pods"
+      operationId: "listPods"
+      parameters:
+        - name: "regionList"
+          in: "query"
+          description: "Filter by regions (comma-separated)"
+          schema:
+            type: string
+        - name: "statusList"
+          in: "query"
+          description: "Filter by status codes (comma-separated)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PodListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    post:
+      tags:
+        - "Pods"
+      summary: "Create Pod"
+      operationId: "createPod"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePodRequest"
+      responses:
+        '200':
+          description: "Pod created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PodResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/pods/{id}:
+    get:
+      tags:
+        - "Pods"
+      summary: "Get Pod by ID"
+      operationId: "getPodById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PodResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - "Pods"
+      summary: "Delete Pod"
+      operationId: "deletePod"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Pod deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/pods/{id}/pause:
+    post:
+      tags:
+        - "Pods"
+      summary: "Pause Pod"
+      operationId: "pausePod"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Pod paused successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/pods/{id}/resume:
+    post:
+      tags:
+        - "Pods"
+      summary: "Resume Pod"
+      operationId: "resumePod"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Pod resumed successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "List Endpoints"
+      operationId: "listEndpoints"
+      parameters:
+        - name: "statusList"
+          in: "query"
+          description: "Filter by status (comma-separated)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    post:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Create Endpoint"
+      operationId: "createEndpoint"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEndpointRequest"
+      responses:
+        '200':
+          description: "Endpoint created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Get Endpoint by ID"
+      operationId: "getEndpointById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    patch:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Update Endpoint"
+      operationId: "updateEndpoint"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEndpointRequest"
+      responses:
+        '200':
+          description: "Endpoint updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EndpointResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Delete Endpoint"
+      operationId: "deleteEndpoint"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Endpoint deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/stop:
+    post:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Stop Endpoint"
+      operationId: "stopEndpoint"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Endpoint stopped successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/start:
+    post:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Start Endpoint"
+      operationId: "startEndpoint"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Endpoint started successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/workers:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "List Workers"
+      operationId: "listWorkers"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - name: "statusList"
+          in: "query"
+          description: "Filter by worker status (comma-separated)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerListResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/workers/{count}:
+    put:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Scale Workers"
+      operationId: "scaleWorkers"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - name: "count"
+          in: "path"
+          required: true
+          description: "Number of workers"
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Workers scaled successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/tasks:
+    post:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Submit Task"
+      operationId: "submitTask"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitTaskRequest"
+      responses:
+        '200':
+          description: "Task submitted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitTaskResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "List Tasks"
+      operationId: "listTasks"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - name: "status"
+          in: "query"
+          description: "Filter by task status"
+          schema:
+            type: string
+            enum: ["PROCESSING", "DELIVERED", "SUCCESS", "FAILED"]
+        - name: "pageNumber"
+          in: "query"
+          description: "Page number"
+          schema:
+            type: integer
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          description: "Items per page"
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/tasks/{taskId}:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Get Task by ID"
+      operationId: "getTaskById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - name: "taskId"
+          in: "path"
+          required: true
+          description: "Task ID"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/tasks/count:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Get Task Count"
+      operationId: "getTaskCount"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskCountResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/serverless/{id}/workers/{workerId}/logs:
+    get:
+      tags:
+        - "Elastic Endpoints"
+      summary: "Get Worker Logs"
+      operationId: "getWorkerLogs"
+      description: "Retrieves logs from a specific worker (pod) belonging to an endpoint"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - name: "workerId"
+          in: "path"
+          required: true
+          description: "Worker ID"
+          schema:
+            type: string
+        - name: "pageSize"
+          in: "query"
+          description: "Number of log entries to return"
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+        - name: "keyword"
+          in: "query"
+          description: "Filter logs by keyword"
+          schema:
+            type: string
+        - name: "startTime"
+          in: "query"
+          description: "Start time (epoch ms or ISO 8601)"
+          schema:
+            type: string
+        - name: "endTime"
+          in: "query"
+          description: "End time (epoch ms or ISO 8601)"
+          schema:
+            type: string
+        - name: "searchAfterTime"
+          in: "query"
+          description: "Pagination token (timestamp)"
+          schema:
+            type: string
+        - name: "searchAfterOffset"
+          in: "query"
+          description: "Pagination token (offset)"
+          schema:
+            type: integer
+        - name: "direction"
+          in: "query"
+          description: "Forward or Backward"
+          schema:
+            type: string
+            enum: ["Forward", "Backward"]
+            default: "Forward"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerLogsResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/volumes:
+    get:
+      tags:
+        - "Volumes"
+      summary: "List Volumes (Paginated)"
+      operationId: "listVolumes"
+      parameters:
+        - name: "page"
+          in: "query"
+          description: "Page number (1-based)"
+          schema:
+            type: integer
+            default: 1
+        - name: "size"
+          in: "query"
+          description: "Page size"
+          schema:
+            type: integer
+            default: 10
+        - name: "storageType"
+          in: "query"
+          required: true
+          description: "Storage type: S3, CEPH, VENDOR"
+          schema:
+            type: string
+            enum: ["S3", "CEPH", "VENDOR", "R2"]
+        - name: "region"
+          in: "query"
+          description: "Filter by region code"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeListResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    post:
+      tags:
+        - "Volumes"
+      summary: "Create Volume"
+      operationId: "createVolume"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVolumeRequest"
+      responses:
+        '200':
+          description: "Volume created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/volumes/{id}:
+    get:
+      tags:
+        - "Volumes"
+      summary: "Get Volume by ID"
+      operationId: "getVolumeById"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - "Volumes"
+      summary: "Delete Volume"
+      operationId: "deleteVolume"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        '200':
+          description: "Volume deleted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '409':
+          description: "Volume is mounted or operation failed"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/volumes/{id}/name:
+    post:
+      tags:
+        - "Volumes"
+      summary: "Rename Volume"
+      operationId: "renameVolume"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameVolumeRequest"
+      responses:
+        '200':
+          description: "Volume renamed successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+  /v2/volumes/{id}/resize:
+    post:
+      tags:
+        - "Volumes"
+      summary: "Resize Volume"
+      operationId: "resizeVolume"
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      description: "Resize a CEPH or VENDOR volume. Only volumes with ACTIVE status and mountCount=0 can be resized."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResizeVolumeRequest"
+      responses:
+        '200':
+          description: "Volume resize initiated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '409':
+          description: "Volume is in use or not in ACTIVE status"
+        '500':
+          $ref: "#/components/responses/ServerError"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      description: "Resource ID"
+      schema:
+        type: string
+
+  responses:
+    BadRequest:
+      description: "Bad Request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Unauthorized:
+      description: "Unauthorized - Invalid or missing API key"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NotFound:
+      description: "Resource not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    ServerError:
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    # Response Wrappers
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "success"
+        code:
+          type: integer
+          example: 10000
+        data:
+          type: boolean
+          example: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          nullable: true
+
+    # Container Registry Credentials
+    Credential:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: "my-docker-registry"
+        type:
+          type: string
+          example: "DOCKER_HUB"
+          enum: ["DOCKER_HUB", "GCR", "ECR", "ACR", "PRIVATE"]
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+
+    CreateCredentialRequest:
+      type: object
+      required:
+        - name
+        - type
+        - username
+        - password
+      properties:
+        name:
+          type: string
+          description: "Credential name"
+        type:
+          type: string
+          enum: ["DOCKER_HUB", "GCR", "ECR", "ACR", "PRIVATE"]
+        username:
+          type: string
+          description: "Registry username"
+        password:
+          type: string
+          description: "Registry password/token"
+
+    UpdateCredentialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+
+    CredentialResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/Credential"
+
+    CredentialListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Credential"
+
+    # Virtual Machines
+    VM:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 456
+        name:
+          type: string
+          example: "my-vm"
+        status:
+          type: string
+          example: "running"
+        gpuDisplayName:
+          type: string
+          example: "NVIDIA RTX A4000"
+        ipAddress:
+          type: string
+          example: "192.168.1.100"
+        cpuCores:
+          type: integer
+          example: 8
+        memoryInGb:
+          type: string
+          example: "32"
+        gpuCount:
+          type: integer
+          example: 1
+        gpuMemoryInGb:
+          type: string
+          example: "16"
+        region:
+          type: string
+          example: "us-east-1"
+        storageInGb:
+          type: string
+          example: "100"
+        sshTemplate:
+          type: string
+          example: "ssh root@192.168.1.100"
+        createdAt:
+          type: string
+          format: date-time
+        isSpot:
+          type: integer
+          example: 0
+
+    CreateVMRequest:
+      type: object
+      required:
+        - vmTypeId
+        - region
+        - name
+      properties:
+        vmTypeId:
+          type: integer
+          description: "VM type ID"
+        region:
+          type: string
+          description: "Region code (e.g., us-east-1)"
+        name:
+          type: string
+          description: "VM display name"
+        isSpot:
+          type: integer
+          description: "0=on-demand, 1=spot (default: 0)"
+          default: 0
+        volumeMountPaths:
+          type: object
+          description: "Volume ID to mount path mapping"
+          additionalProperties:
+            type: string
+
+    UpdateVMRequest:
+      type: object
+      properties:
+        name:
+          type: string
+
+    VMResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/VM"
+
+    VMListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/VM"
+            page:
+              type: integer
+            size:
+              type: integer
+            total:
+              type: integer
+            pages:
+              type: integer
+
+    VMType:
+      type: object
+      properties:
+        gpuType:
+          type: string
+          example: "NVIDIA_RTX_4090_24G"
+        regions:
+          type: array
+          items:
+            type: object
+            properties:
+              region:
+                type: string
+              regionName:
+                type: string
+              available:
+                type: boolean
+              vmTypeId:
+                type: integer
+
+    VMTypesResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/VMType"
+
+    # Pods
+    EnvVar:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+
+    PortExpose:
+      type: object
+      properties:
+        port:
+          type: integer
+        protocol:
+          type: string
+
+    PersistentVolume:
+      type: object
+      properties:
+        volumeId:
+          type: integer
+        mountPath:
+          type: string
+        needBackup:
+          type: boolean
+
+    Pod:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        image:
+          type: string
+        imageRegistry:
+          type: string
+        gpuType:
+          type: string
+        gpuDisplayName:
+          type: string
+        gpuCount:
+          type: integer
+        status:
+          type: string
+        createdAt:
+          type: integer
+        sshCmd:
+          type: string
+
+    CreatePodRequest:
+      type: object
+      required:
+        - name
+        - image
+        - gpuType
+        - gpuCount
+      properties:
+        name:
+          type: string
+          description: "Pod name (1-255 chars)"
+        regions:
+          type: array
+          description: "Acceptable region codes for scheduling"
+          items:
+            type: string
+        image:
+          type: string
+          description: "Docker image"
+        imageRegistry:
+          type: string
+          description: "Docker registry URL"
+        containerRegistryAuthId:
+          type: integer
+          description: "Container registry credential ID"
+        imagePublicType:
+          type: string
+          enum: ["PUBLIC", "PRIVATE"]
+          default: "PUBLIC"
+        resourceType:
+          type: string
+          enum: ["GPU", "CPU"]
+          default: "GPU"
+        gpuType:
+          type: string
+          description: "GPU type"
+        gpuCount:
+          type: integer
+          description: "Number of GPUs (must be power of 2)"
+        minSingleCardVramInGb:
+          type: integer
+        minSingleCardRamInGb:
+          type: integer
+        minSingleCardVcpu:
+          type: integer
+        shmInGb:
+          type: integer
+        containerVolumeInGb:
+          type: integer
+        persistentVolumeInGb:
+          type: integer
+        persistentMountPath:
+          type: string
+        initializationCommand:
+          type: string
+        environmentVars:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnvVar"
+        expose:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortExpose"
+        persistentVolumes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PersistentVolume"
+
+    PodResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/Pod"
+
+    PodListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pod"
+
+    # Elastic Endpoints
+    EndpointResource:
+      type: object
+      properties:
+        region:
+          type: string
+        gpuType:
+          type: string
+        gpuCount:
+          type: integer
+
+    EndpointExpose:
+      type: object
+      properties:
+        port:
+          type: integer
+        protocol:
+          type: string
+
+    Endpoint:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        status:
+          type: string
+        totalWorkers:
+          type: integer
+        runningWorkers:
+          type: integer
+        cost:
+          type: number
+        serviceMode:
+          type: string
+          enum: ["ALB", "QUEUE", "CUSTOM"]
+        webhook:
+          type: string
+          nullable: true
+
+    CreateEndpointRequest:
+      type: object
+      required:
+        - name
+        - image
+        - resources
+        - workers
+        - containerVolumeInGb
+        - serviceMode
+      properties:
+        name:
+          type: string
+          description: "Endpoint name (max 20 chars, letters first)"
+        imageRegistry:
+          type: string
+        image:
+          type: string
+        containerRegistryAuthId:
+          type: integer
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/EndpointResource"
+        workers:
+          type: integer
+        containerVolumeInGb:
+          type: integer
+          minimum: 20
+        environmentVars:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnvVar"
+        expose:
+          $ref: "#/components/schemas/EndpointExpose"
+        serviceMode:
+          type: string
+          enum: ["ALB", "QUEUE", "CUSTOM"]
+        webhook:
+          type: string
+          maxLength: 512
+
+    UpdateEndpointRequest:
+      type: object
+      required:
+        - name
+        - resources
+        - workers
+        - containerVolumeInGb
+      properties:
+        name:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/EndpointResource"
+        workers:
+          type: integer
+          minimum: 1
+        containerVolumeInGb:
+          type: integer
+        minSingleCardVramInGb:
+          type: integer
+        minSingleCardVcpu:
+          type: integer
+        minSingleCardRamInGb:
+          type: integer
+        credentialId:
+          type: integer
+        initializationCommand:
+          type: string
+        environmentVars:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnvVar"
+        expose:
+          $ref: "#/components/schemas/EndpointExpose"
+        webhook:
+          type: string
+          maxLength: 512
+
+    EndpointResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/Endpoint"
+
+    EndpointListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Endpoint"
+
+    Worker:
+      type: object
+      properties:
+        workerId:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: integer
+
+    WorkerListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Worker"
+
+    # Tasks
+    SubmitTaskRequest:
+      type: object
+      required:
+        - input
+        - workerPort
+        - processUri
+      properties:
+        taskId:
+          type: string
+          maxLength: 255
+          description: "User-defined task ID (alphanumeric + underscore). Auto-generated if omitted"
+        input:
+          type: object
+          description: "Task input data (any JSON structure)"
+        workerPort:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        processUri:
+          type: string
+          maxLength: 255
+        webhook:
+          type: string
+          maxLength: 512
+        webhookAuthKey:
+          type: string
+          maxLength: 255
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+
+    SubmitTaskResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            taskId:
+              type: string
+
+    Task:
+      type: object
+      properties:
+        taskId:
+          type: string
+        endpointId:
+          type: integer
+        endpointName:
+          type: string
+        status:
+          type: string
+          enum: ["PROCESSING", "DELIVERED", "SUCCESS", "FAILED"]
+        workerUrl:
+          type: string
+        webhook:
+          type: string
+        deliveryStatus:
+          type: string
+          enum: ["INIT", "SUCCESS", "FAILED", "MAX_RETRIES_EXCEEDED"]
+        deliveryAttempts:
+          type: integer
+        error:
+          type: string
+          nullable: true
+        input:
+          type: object
+        output:
+          type: object
+        headers:
+          type: object
+        createdAt:
+          type: integer
+        updatedAt:
+          type: integer
+        deliveredAt:
+          type: integer
+
+    TaskResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/Task"
+
+    TaskListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Task"
+            page:
+              type: integer
+            size:
+              type: integer
+            total:
+              type: integer
+            pages:
+              type: integer
+
+    TaskCountResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            processing:
+              type: integer
+
+    # Worker Logs
+    LogEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        log:
+          type: string
+        offset:
+          type: integer
+
+    WorkerLogsResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            logs:
+              type: array
+              items:
+                $ref: "#/components/schemas/LogEntry"
+            hasMore:
+              type: boolean
+            nextSearchAfterTime:
+              type: string
+            nextSearchAfterOffset:
+              type: string
+
+    # Volumes
+    Volume:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        sizeInGb:
+          type: integer
+        region:
+          type: string
+        storageType:
+          type: string
+          enum: ["S3", "CEPH", "VENDOR", "R2"]
+        status:
+          type: string
+          enum: ["creating", "active", "deleting", "resizing", "error"]
+        vendorVolumeType:
+          type: string
+          nullable: true
+        mountCount:
+          type: integer
+        cost:
+          type: number
+        createdAt:
+          type: integer
+
+    CreateVolumeRequest:
+      type: object
+      required:
+        - name
+        - storageType
+      properties:
+        name:
+          type: string
+        storageType:
+          type: string
+          enum: ["S3", "CEPH", "VENDOR", "R2"]
+        region:
+          type: string
+          description: "Required for CEPH, VENDOR, R2"
+        sizeInGb:
+          type: integer
+          minimum: 1
+          maximum: 10240
+          description: "Required for CEPH, VENDOR"
+        vendorVolumeType:
+          type: string
+          enum: ["NVMe", "HDD"]
+          description: "Required for VENDOR"
+
+    UpdateVolumeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+
+    RenameVolumeRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    ResizeVolumeRequest:
+      type: object
+      required:
+        - sizeInGb
+      properties:
+        sizeInGb:
+          type: integer
+          minimum: 1
+          maximum: 10240
+
+    VolumeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          $ref: "#/components/schemas/Volume"
+
+    VolumeListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Volume"
+            page:
+              type: integer
+            size:
+              type: integer
+            total:
+              type: integer
+            pages:
+              type: integer

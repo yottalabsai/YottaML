@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.elastic import ElasticApi
+from yottaml.elastic import ElasticApi
 
 
 MOCK_WORKERS_RESPONSE = {
@@ -45,7 +45,7 @@ def test_get_workers_with_status_list(mock_get, elastic_api):
     path = mock_get.call_args[0][0]
     payload = mock_get.call_args[1].get("payload")
 
-    assert path == "/openapi/v1/elastic/deploy/384414489660887859/workers"
+    assert path == "/v2/serverless/384414489660887859/workers"
     assert payload["statusList"] == "INITIALIZE,RUNNING"
     assert resp["code"] == 10000
     assert len(resp["data"]) == 2
@@ -61,7 +61,7 @@ def test_get_workers_without_status_list(mock_get, elastic_api):
     path = mock_get.call_args[0][0]
     payload = mock_get.call_args[1].get("payload")
 
-    assert path == "/openapi/v1/elastic/deploy/384414489660887859/workers"
+    assert path == "/v2/serverless/384414489660887859/workers"
     assert "statusList" not in payload
     assert resp["code"] == 10000
 

@@ -1,7 +1,7 @@
 import os
 import pytest
-from yotta.error import ParameterRequiredError
-from yotta.skywalker import SkywalkerTaskApi
+from yottaml.error import ParameterRequiredError
+from yottaml.skywalker import SkywalkerTaskApi
 
 
 @pytest.mark.integration
@@ -28,7 +28,7 @@ def test_get_task_success_integration():
     assert isinstance(resp, dict)
     assert resp.get("code") == 10000
     data = resp.get("data") or {}
-    assert data.get("userTaskId") == task_id
+    assert data.get("taskId") == task_id
 
 
 def test_get_task_invalid_endpoint_id():
@@ -46,24 +46,21 @@ def test_get_task_empty_task_id():
     """task_id must not be empty."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
-    # empty string still matches type (str) but should fail "required" check
     with pytest.raises(ParameterRequiredError):
         api.get_task(endpoint_id=1, task_id="")
 
 
-def test_get_task_headers_and_path(monkeypatch):
-    """Verify request path and X-Endpoint-ID header."""
+def test_get_task_path(monkeypatch):
+    """Verify request path for v2."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
     captured = {}
 
-    def fake_get(path, headers=None):
+    def fake_get(path):
         captured["path"] = path
-        captured["headers"] = headers or {}
         return {"code": 10000, "data": {}}
 
     monkeypatch.setattr(api, "http_get", fake_get)
 
     api.get_task(endpoint_id=123, task_id="task_abc")
 
-    assert captured["path"] == "/openapi/v1/skywalker/tasks/task_abc"
-    assert captured["headers"]["X-Endpoint-ID"] == "123"
+    assert captured["path"] == "/v2/serverless/123/tasks/task_abc"

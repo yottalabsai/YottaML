@@ -1,8 +1,7 @@
-from enum import Enum
 from typing import List, Optional, Union, Any
-from yotta import API
-from yotta.lib.enums import ElasticDeploymentStatusEnum
-from yotta.lib.utils import (
+from yottaml import API  # noqa: F401
+from yottaml.lib.enums import ElasticDeploymentStatusEnum
+from yottaml.lib.utils import (
     check_required_parameter,
     check_required_parameters,
     check_is_positive_int,
@@ -12,11 +11,17 @@ from yotta.lib.utils import (
 
 class ElasticApi(API):
     """
-    Python client for Elastic Deployment OpenAPI endpoints.
+    Python client for Serverless (Elastic) OpenAPI v2 endpoints.
 
-      - GET  /openapi/v1/elastic/deploy/list
-      - GET  /openapi/v1/elastic/deploy/{id}
-      - POST /openapi/v1/elastic/deploy/{id}/workers
+      - GET    /v2/serverless
+      - GET    /v2/serverless/{id}
+      - POST   /v2/serverless
+      - PATCH  /v2/serverless/{id}
+      - POST   /v2/serverless/{id}/stop
+      - POST   /v2/serverless/{id}/start
+      - DELETE /v2/serverless/{id}
+      - PUT    /v2/serverless/{id}/workers?count=N
+      - GET    /v2/serverless/{id}/workers
     """
 
     def __init__(self, api_key=None, **kwargs):
@@ -39,27 +44,29 @@ class ElasticApi(API):
         initialization_command: Optional[str] = None,
         environment_vars: Optional[List[dict]] = None,
         expose: Optional[dict] = None,
+        webhook: Optional[str] = None,
     ):
         """
-        Create Elastic Deployment.
+        Create Serverless Endpoint.
 
-        POST /openapi/v1/elastic/deploy/create
+        POST /v2/serverless
 
         Args:
-            name (str): Deployment name.
+            name (str): Endpoint name (max 20 chars).
             image (str): Container image.
             resources (List[dict]): Resource list, each with region/gpuType/gpuCount.
             workers (int): Initial workers count (must be positive).
-            service_mode (str): Service mode, e.g. "ALB".
-            container_volume_in_gb (int): Container volume size in GB.
-            image_registry (str, optional): Image registry URL, e.g. https://index.docker.io/v1.
-            credential_id (int|str, optional): Credential ID used by this deployment.
+            service_mode (str): ALB, QUEUE, or CUSTOM.
+            container_volume_in_gb (int): Container volume size in GB (min 20).
+            image_registry (str, optional): Image registry URL.
+            credential_id (int|str, optional): Container registry credential ID.
             min_single_card_vram_in_gb (int, optional): Minimum single-card VRAM in GB.
             min_single_card_vcpu (int, optional): Minimum single-card vCPU count.
             min_single_card_ram_in_gb (int, optional): Minimum single-card RAM in GB.
             initialization_command (str, optional): Container initialization command.
             environment_vars (List[dict], optional): Environment variables list.
             expose (dict, optional): Exposed port configuration.
+            webhook (str, optional): Webhook URL for worker status notifications.
         """
         check_required_parameters(
             [
@@ -80,37 +87,36 @@ class ElasticApi(API):
                 "name": name,
                 "image": image,
                 "imageRegistry": image_registry,
+                "containerRegistryAuthId": credential_id,
                 "resources": resources,
                 "minSingleCardVramInGb": min_single_card_vram_in_gb,
                 "minSingleCardVcpu": min_single_card_vcpu,
                 "minSingleCardRamInGb": min_single_card_ram_in_gb,
                 "workers": workers,
                 "serviceMode": service_mode,
-                "credentialId": credential_id,
                 "containerVolumeInGb": container_volume_in_gb,
                 "initializationCommand": initialization_command,
                 "environmentVars": environment_vars,
                 "expose": expose,
+                "webhook": webhook,
             }
         )
 
-        url_path = "/openapi/v1/elastic/deploy/create"
-        return self.http_post(url_path, payload=payload)
+        return self.http_post("/v2/serverless", payload=payload)
 
     # ------------------------- List deployments -------------------------
     def get_deployments(self, status_list: Optional[List[Union[str, ElasticDeploymentStatusEnum]]] = None, **kwargs):
         """
-        Get Elastic Deployment list.
+        Get Serverless Endpoint list.
 
-        GET /openapi/v1/elastic/deploy/list
+        GET /v2/serverless
 
         Args:
-            status_list (List[str], optional): Filter by status names. Example:
-                ["INITIALIZING", "RUNNING"]. Values are case-insensitive.
+            status_list (List[str], optional): Filter by status names.
             **kwargs: Additional query params (pass-through).
 
         Returns:
-            Json: List of elastic deployment details.
+            Json: List of serverless endpoint details.
         """
         payload = {**kwargs}
 
@@ -126,15 +132,14 @@ class ElasticApi(API):
             if normalized:
                 payload["statusList"] = ",".join(normalized)
 
-        url_path = "/openapi/v1/elastic/deploy/list"
-        return self.http_get(url_path, payload=payload)
+        return self.http_get("/v2/serverless", payload=payload)
 
     # ------------------------- Get one deployment -------------------------
     def get_deployment_detail(self, deployment_id: Union[int, str]):
         """
-        Get Elastic Deployment detail by ID.
+        Get Serverless Endpoint detail by ID.
 
-        GET /openapi/v1/elastic/deploy/{id}
+        GET /v2/serverless/{id}
 
         Args:
             deployment_id (int|str): Deployment ID (positive integer).
@@ -145,36 +150,31 @@ class ElasticApi(API):
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}"
-        return self.http_get(url_path)
+        return self.http_get(f"/v2/serverless/{int(deployment_id)}")
 
     # ------------------------- Scale workers -------------------------
     def scale_workers(self, deployment_id: Union[int, str], workers: int):
         """
-        Scale Elastic Deployment workers.
+        Scale Serverless Endpoint workers.
 
-        POST /openapi/v1/elastic/deploy/{id}/workers
+        PUT /v2/serverless/{id}/workers?count=N
 
         Args:
             deployment_id (int|str): Deployment ID (positive integer).
-            workers (int): Target workers (>= 0).
+            workers (int): Target worker count (>= 0).
 
         Returns:
-            Json: Standard success response with data=None.
+            Json: Standard success response.
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
         if not isinstance(workers, int) or workers < 0:
             raise ValueError("workers must be a non-negative integer")
 
-        payload = clean_none_value(
-            {
-                "workers": workers
-            }
+        return self.http_put(
+            f"/v2/serverless/{int(deployment_id)}/workers",
+            payload={"count": workers},
         )
-
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/workers"
-        return self.http_post(url_path, payload=payload)
 
     # ------------------------- Update deployment -------------------------
     def update_deployment(
@@ -191,25 +191,27 @@ class ElasticApi(API):
         initialization_command: Any = _UNSET,
         environment_vars: Any = _UNSET,
         expose: Any = _UNSET,
+        webhook: Any = _UNSET,
     ):
         """
-        Update Elastic Deployment.
+        Update Serverless Endpoint.
 
-        POST /openapi/v1/elastic/deploy/{id}/update
+        PATCH /v2/serverless/{id}
 
         Args:
             deployment_id (int|str): Deployment ID.
-            name (str): Deployment name.
+            name (str): Endpoint name.
             resources (List[dict]): Resource list, each with region/gpuType/gpuCount.
-            workers (int): Initial workers count (must be positive).
+            workers (int): Target workers count (must be positive).
             container_volume_in_gb (int): Container volume size in GB.
-            credential_id (int|str, optional): Credential ID used by this deployment.
+            credential_id (int|str, optional): Container registry credential ID.
             min_single_card_vram_in_gb (int, optional): Minimum single-card VRAM in GB.
             min_single_card_vcpu (int, optional): Minimum single-card vCPU count.
             min_single_card_ram_in_gb (int, optional): Minimum single-card RAM in GB.
             initialization_command (str, optional): Container initialization command.
             environment_vars (List[dict], optional): Environment variables list.
             expose (dict, optional): Exposed port configuration.
+            webhook (str, optional): Webhook URL for worker status notifications.
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
@@ -225,7 +227,6 @@ class ElasticApi(API):
         if not isinstance(workers, int) or workers <= 0:
             raise ValueError("workers must be a positive integer")
 
-        # Build payload with required fields
         payload = {
             "name": name,
             "resources": resources,
@@ -233,8 +234,6 @@ class ElasticApi(API):
             "containerVolumeInGb": container_volume_in_gb,
         }
 
-        # Add optional fields only if they were provided (not _UNSET)
-        # This includes None values if explicitly passed
         if credential_id is not _UNSET:
             payload["credentialId"] = credential_id
         if min_single_card_vram_in_gb is not _UNSET:
@@ -249,43 +248,41 @@ class ElasticApi(API):
             payload["environmentVars"] = environment_vars
         if expose is not _UNSET:
             payload["expose"] = expose
+        if webhook is not _UNSET:
+            payload["webhook"] = webhook
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/update"
-        return self.http_post(url_path, payload=payload)
+        return self.http_patch(f"/v2/serverless/{int(deployment_id)}", payload=payload)
 
     # ------------------------- Control deployment lifecycle -------------------------
     def stop_deployment(self, deployment_id: Union[int, str]):
-        """Stop a specific Elastic Deployment.
+        """Stop a specific Serverless Endpoint.
 
-        POST /openapi/v1/elastic/deploy/{id}/stop
+        POST /v2/serverless/{id}/stop
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/stop"
-        return self.http_post(url_path, payload=None)
+        return self.http_post(f"/v2/serverless/{int(deployment_id)}/stop", payload=None)
 
     def start_deployment(self, deployment_id: Union[int, str]):
-        """Start or resume a specific Elastic Deployment.
+        """Start or resume a specific Serverless Endpoint.
 
-        POST /openapi/v1/elastic/deploy/{id}/start
+        POST /v2/serverless/{id}/start
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/start"
-        return self.http_post(url_path, payload=None)
+        return self.http_post(f"/v2/serverless/{int(deployment_id)}/start", payload=None)
 
     def delete_deployment(self, deployment_id: Union[int, str]):
-        """Delete a specific Elastic Deployment.
+        """Delete a specific Serverless Endpoint.
 
-        DELETE /openapi/v1/elastic/deploy/{id}
+        DELETE /v2/serverless/{id}
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}"
-        return self.http_delete(url_path, payload=None)
+        return self.http_delete(f"/v2/serverless/{int(deployment_id)}", payload=None)
 
     # ------------------------- List workers for deployment -------------------------
     def get_workers(
@@ -295,9 +292,9 @@ class ElasticApi(API):
         **kwargs,
     ):
         """
-        Get all workers of a specific Elastic Deployment.
+        Get all workers of a specific Serverless Endpoint.
 
-        GET /openapi/v1/elastic/deploy/{id}/workers
+        GET /v2/serverless/{id}/workers
         """
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
@@ -306,5 +303,4 @@ class ElasticApi(API):
         if status_list:
             payload["statusList"] = ",".join([str(s).strip().upper() for s in status_list if str(s).strip()])
 
-        url_path = f"/openapi/v1/elastic/deploy/{int(deployment_id)}/workers"
-        return self.http_get(url_path, payload=payload)
+        return self.http_get(f"/v2/serverless/{int(deployment_id)}/workers", payload=payload)

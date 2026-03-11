@@ -3,9 +3,9 @@ import logging
 import argparse
 
 from examples.utils.prepare_env import get_api_key
-from yotta.error import ClientError
-from yotta.lib.utils import config_logging, none_to_zero
-from yotta.pod import PodApi
+from yottaml.error import ClientError
+from yottaml.lib.utils import config_logging, none_to_zero
+from yottaml.pod import PodApi
 
 
 def format_size(size_in_gb):

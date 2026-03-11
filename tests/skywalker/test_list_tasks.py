@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from yotta.skywalker import SkywalkerTaskApi, TaskStatus
+from yottaml.skywalker import SkywalkerTaskApi, TaskStatus
 
 
 @pytest.mark.integration
@@ -42,14 +42,14 @@ def test_list_tasks_success_integration():
 
 
 def test_list_tasks_invalid_status():
-    """status must be in 0~3."""
+    """status must be a valid TaskStatus string."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
 
     with pytest.raises(ValueError):
-        api.list_tasks(endpoint_id=1, status=4, page=1, page_size=10)
+        api.list_tasks(endpoint_id=1, status="INVALID_STATUS", page=1, page_size=10)
 
     with pytest.raises(ValueError):
-        api.list_tasks(endpoint_id=1, status=-1, page=1, page_size=10)
+        api.list_tasks(endpoint_id=1, status="4", page=1, page_size=10)
 
 
 def test_list_tasks_invalid_pagination():
@@ -63,15 +63,14 @@ def test_list_tasks_invalid_pagination():
         api.list_tasks(endpoint_id=1, page=1, page_size=0)
 
 
-def test_list_tasks_query_and_headers(monkeypatch):
-    """Verify query params and X-Endpoint-ID header."""
+def test_list_tasks_query_params(monkeypatch):
+    """Verify query params and path for v2."""
     api = SkywalkerTaskApi(api_key="dummy", base_url="http://localhost")
     captured = {}
 
-    def fake_get(path, payload=None, headers=None):
+    def fake_get(path, payload=None):
         captured["path"] = path
         captured["payload"] = payload or {}
-        captured["headers"] = headers or {}
         return {
             "code": 10000,
             "data": {
@@ -90,8 +89,7 @@ def test_list_tasks_query_and_headers(monkeypatch):
     )
 
     assert resp["code"] == 10000
-    assert captured["path"] == "/openapi/v1/skywalker/tasks"
+    assert captured["path"] == "/v2/serverless/123/tasks"
     assert captured["payload"]["status"] == TaskStatus.SUCCESS.value
-    assert captured["payload"]["page"] == 2
+    assert captured["payload"]["pageNumber"] == 2
     assert captured["payload"]["pageSize"] == 20
-    assert captured["headers"]["X-Endpoint-ID"] == "123"
