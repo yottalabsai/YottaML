@@ -1,6 +1,6 @@
 import click
 
-from yottaml_cli.commands import credentials, deployments, gpus, pods, tasks
+from yottaml_cli.commands import credentials, serverless, gpus, pods, tasks
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -25,7 +25,7 @@ def cli(ctx, api_key, base_url, debug):
 
 
 cli.add_command(pods.pods)
-cli.add_command(deployments.deployments)
+cli.add_command(serverless.serverless)
 cli.add_command(gpus.gpus)
 cli.add_command(credentials.credentials)
 cli.add_command(tasks.tasks)
