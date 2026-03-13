@@ -135,15 +135,15 @@ def test_update_deployment_client_error(elastic_api):
     ]
 
     with patch.object(
-            elastic_api,
-            "http_patch",
-            side_effect=ClientError(
-                status_code=400,
-                error_code=20002,
-                error_message="Update elastic deployment failed",
-                header={},
-                error_data=None,
-            ),
+        elastic_api,
+        "http_patch",
+        side_effect=ClientError(
+            status_code=400,
+            error_code=20002,
+            error_message="Update elastic deployment failed",
+            header={},
+            error_data=None,
+        ),
     ):
         with pytest.raises(ClientError) as exc_info:
             elastic_api.update_deployment(

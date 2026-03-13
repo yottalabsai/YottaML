@@ -26,7 +26,7 @@ def main():
         response = client.resume_pod(pod_id=pod_id)
 
         # Check response
-        if response['code'] == 10000:
+        if response["code"] == 10000:
             logging.info(f"Successfully resumed pod {pod_id}")
             logging.info(f"Response message: {response['message']}")
         else:
@@ -37,7 +37,9 @@ def main():
         # Handle client-side errors (4XX status codes)
         logging.error(
             "Client error occurred. Status: %s, Error code: %s, Message: %s",
-            error.status_code, error.error_code, error.error_message
+            error.status_code,
+            error.error_code,
+            error.error_message,
         )
     except Exception as error:
         # Handle other unexpected errors

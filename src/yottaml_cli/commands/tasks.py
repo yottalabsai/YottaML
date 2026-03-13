@@ -8,7 +8,9 @@ from yottaml.skywalker import SkywalkerTaskApi
 
 
 def _client(ctx):
-    return SkywalkerTaskApi(api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"])
+    return SkywalkerTaskApi(
+        api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"]
+    )
 
 
 def _out(data):
@@ -27,14 +29,24 @@ def tasks():
 
 @tasks.command("list")
 @click.option("--endpoint-id", required=True, type=int, help="Serverless endpoint ID.")
-@click.option("--status", default=None, help="Filter by status (PROCESSING|DELIVERED|SUCCESS|FAILED).")
+@click.option(
+    "--status",
+    default=None,
+    help="Filter by status (PROCESSING|DELIVERED|SUCCESS|FAILED).",
+)
 @click.option("--page", type=int, default=1, show_default=True, help="Page number.")
-@click.option("--page-size", type=int, default=10, show_default=True, help="Results per page.")
+@click.option(
+    "--page-size", type=int, default=10, show_default=True, help="Results per page."
+)
 @click.pass_context
 def list_tasks(ctx, endpoint_id, status, page, page_size):
     """List tasks for an endpoint."""
     try:
-        _out(_client(ctx).list_tasks(endpoint_id=endpoint_id, status=status, page=page, page_size=page_size))
+        _out(
+            _client(ctx).list_tasks(
+                endpoint_id=endpoint_id, status=status, page=page, page_size=page_size
+            )
+        )
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -64,15 +76,29 @@ def processing_count(ctx, endpoint_id):
 
 @tasks.command("create")
 @click.option("--endpoint-id", required=True, type=int, help="Serverless endpoint ID.")
-@click.option("--task-id", default=None, help="User-defined task ID (alphanumeric + underscore, max 255).")
+@click.option(
+    "--task-id",
+    default=None,
+    help="User-defined task ID (alphanumeric + underscore, max 255).",
+)
 @click.option("--worker-port", required=True, type=int, help="Worker port (1-65535).")
 @click.option("--process-uri", required=True, help="Worker URI path, e.g. /process.")
-@click.option("--input", "input_data", required=True, help="Task input as a JSON string.")
+@click.option(
+    "--input", "input_data", required=True, help="Task input as a JSON string."
+)
 @click.option("--webhook", default=None, help="Webhook URL for task completion.")
 @click.option("--webhook-auth-key", default=None, help="Auth key for the webhook URL.")
 @click.pass_context
-def create_task(ctx, endpoint_id, task_id, worker_port, process_uri, input_data,
-                webhook, webhook_auth_key):
+def create_task(
+    ctx,
+    endpoint_id,
+    task_id,
+    worker_port,
+    process_uri,
+    input_data,
+    webhook,
+    webhook_auth_key,
+):
     """Submit a task to an endpoint."""
     try:
         parsed_input = json.loads(input_data)
@@ -80,14 +106,16 @@ def create_task(ctx, endpoint_id, task_id, worker_port, process_uri, input_data,
         click.echo(f"Error: --input is not valid JSON: {e}", err=True)
         sys.exit(1)
     try:
-        _out(_client(ctx).create_task(
-            endpoint_id=endpoint_id,
-            task_id=task_id,
-            worker_port=worker_port,
-            process_uri=process_uri,
-            input=parsed_input,
-            webhook=webhook,
-            webhook_auth_key=webhook_auth_key,
-        ))
+        _out(
+            _client(ctx).create_task(
+                endpoint_id=endpoint_id,
+                task_id=task_id,
+                worker_port=worker_port,
+                process_uri=process_uri,
+                input=parsed_input,
+                webhook=webhook,
+                webhook_auth_key=webhook_auth_key,
+            )
+        )
     except (ClientError, ServerError) as e:
         _err(e)

@@ -1,10 +1,7 @@
 import pytest
 
 from yottaml.error import ParameterValueError
-from yottaml.lib.utils import (
-    none_to_zero,
-    check_gpu_count
-)
+from yottaml.lib.utils import none_to_zero, check_gpu_count
 
 
 def test_none_to_zero():

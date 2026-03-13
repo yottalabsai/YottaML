@@ -13,7 +13,7 @@ def test_gpu_list_success(gpu_api):
     mock_response = {
         "code": 10000,
         "message": "success",
-        "data": [{"gpuType": "RTX_4090_24G", "regions": ["us-east-1"]}]
+        "data": [{"gpuType": "RTX_4090_24G", "regions": ["us-east-1"]}],
     }
 
     with patch.object(gpu_api, "http_get", return_value=mock_response) as mock_get:
@@ -24,7 +24,11 @@ def test_gpu_list_success(gpu_api):
 
 
 def test_gpu_list_client_error(gpu_api):
-    with patch.object(gpu_api, "http_get", side_effect=ClientError(400, 40001, "Bad Request", {}, None)):
+    with patch.object(
+        gpu_api,
+        "http_get",
+        side_effect=ClientError(400, 40001, "Bad Request", {}, None),
+    ):
         with pytest.raises(ClientError) as exc:
             gpu_api.get_gpus()
         assert exc.value.status_code == 400

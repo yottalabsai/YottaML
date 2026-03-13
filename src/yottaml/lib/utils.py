@@ -115,10 +115,10 @@ def parse_proxies(proxies: dict):
 
 def check_is_positive_int(value, name: str):
     """Validate param type and value.
-    
+
     Args:
         value: The param to validate
-        
+
     Raises:
         ValueError: If param is not a valid integer or is negative
     """
@@ -140,7 +140,7 @@ def check_is_positive_int(value, name: str):
 
 def none_to_zero(value, name) -> int:
     """Convert None to 0 for integer values. Also validates that non-None values are valid integers.
-    
+
     Args:
         value: Value to convert/validate
 
@@ -165,7 +165,11 @@ def none_to_zero(value, name) -> int:
 
     # Handle numeric inputs
     if isinstance(value, (int, float, bool)):
-        if isinstance(value, float) and not value.is_integer() or isinstance(value, bool):
+        if (
+            isinstance(value, float)
+            and not value.is_integer()
+            or isinstance(value, bool)
+        ):
             msg = f"{name} must be an integer" if name else "Value must be an integer"
             raise ValueError(msg)
         return int(value)
@@ -176,14 +180,14 @@ def none_to_zero(value, name) -> int:
 
 def check_gpu_count(gpu_count):
     """Validate that gpu_count is a positive number and power of 2.
-    
+
     Args:
         gpu_count: The number of GPUs to validate
-        
+
     Raises:
         ParameterTypeError: If gpu_count is not a number
         ParameterValueError: If gpu_count is not positive or not a power of 2
-        
+
     Examples:
         >>> check_gpu_count(1)   # Valid
         >>> check_gpu_count(2)   # Valid

@@ -9,6 +9,7 @@ from yottaml.lib.utils import (
     _UNSET,
 )
 
+
 class ElasticApi(API):
     """
     Python client for Serverless (Elastic) OpenAPI v2 endpoints.
@@ -105,7 +106,11 @@ class ElasticApi(API):
         return self.http_post("/v2/serverless", payload=payload)
 
     # ------------------------- List deployments -------------------------
-    def get_deployments(self, status_list: Optional[List[Union[str, ElasticDeploymentStatusEnum]]] = None, **kwargs):
+    def get_deployments(
+        self,
+        status_list: Optional[List[Union[str, ElasticDeploymentStatusEnum]]] = None,
+        **kwargs,
+    ):
         """
         Get Serverless Endpoint list.
 
@@ -272,7 +277,9 @@ class ElasticApi(API):
         check_required_parameter(deployment_id, "deployment_id")
         check_is_positive_int(deployment_id, "deployment_id")
 
-        return self.http_post(f"/v2/serverless/{int(deployment_id)}/start", payload=None)
+        return self.http_post(
+            f"/v2/serverless/{int(deployment_id)}/start", payload=None
+        )
 
     def delete_deployment(self, deployment_id: Union[int, str]):
         """Delete a specific Serverless Endpoint.
@@ -301,6 +308,10 @@ class ElasticApi(API):
 
         payload = {**kwargs}
         if status_list:
-            payload["statusList"] = ",".join([str(s).strip().upper() for s in status_list if str(s).strip()])
+            payload["statusList"] = ",".join(
+                [str(s).strip().upper() for s in status_list if str(s).strip()]
+            )
 
-        return self.http_get(f"/v2/serverless/{int(deployment_id)}/workers", payload=payload)
+        return self.http_get(
+            f"/v2/serverless/{int(deployment_id)}/workers", payload=payload
+        )

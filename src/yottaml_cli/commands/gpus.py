@@ -8,7 +8,9 @@ from yottaml.gpu import GpuApi
 
 
 def _client(ctx):
-    return GpuApi(api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"])
+    return GpuApi(
+        api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"]
+    )
 
 
 def _out(data):

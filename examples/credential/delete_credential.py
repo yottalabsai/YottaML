@@ -24,13 +24,17 @@ def main():
             logging.info("Successfully deleted credential %s", credential_id)
             logging.info("Response message: %s", response.get("message"))
         elif response.get("code") == 25002:
-            logging.warning("Credential %s is in use and cannot be deleted.", credential_id)
+            logging.warning(
+                "Credential %s is in use and cannot be deleted.", credential_id
+            )
             logging.warning("Response message: %s", response.get("message"))
             data = response.get("data") or {}
             pod_list = data.get("podList") or []
             elastic_list = data.get("elasticList") or []
             logging.warning("Pods using this credential: %s", pod_list)
-            logging.warning("Elastic deployments using this credential: %s", elastic_list)
+            logging.warning(
+                "Elastic deployments using this credential: %s", elastic_list
+            )
         else:
             logging.warning("Unexpected response code: %s", response.get("code"))
             logging.warning("Response message: %s", response.get("message"))
@@ -48,5 +52,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

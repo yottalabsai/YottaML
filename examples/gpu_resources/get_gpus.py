@@ -18,7 +18,7 @@ def main():
         "minSingleCardVramInGb": 1,
         "maxSingleCardVramInGb": 300,
         "minSingleCardRamInGb": 1,
-        "maxSingleCardRamInGb": 300
+        "maxSingleCardRamInGb": 300,
     }
 
     try:
@@ -29,8 +29,11 @@ def main():
             logging.info("[GPU LIST] total: %d", len(data))
             logging.info(json.dumps(data, indent=2, ensure_ascii=False))
         else:
-            logging.warning("[GPU LIST] unexpected code: %s %s",
-                            resp.get("code"), resp.get("message"))
+            logging.warning(
+                "[GPU LIST] unexpected code: %s %s",
+                resp.get("code"),
+                resp.get("message"),
+            )
     except ClientError as e:
         logging.error("[GPU LIST] client error: %s %s", e.error_code, e.error_message)
     except Exception as e:

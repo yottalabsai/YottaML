@@ -10,13 +10,13 @@ VALID_CONFIG = {
     "gpu_type": "RTX_4090_24G",
     "name": "test_pod",
     "gpu_count": 1,
-    "expose": [{"port": 22, "protocol": "SSH"}]
+    "expose": [{"port": 22, "protocol": "SSH"}],
 }
 
 MOCK_SUCCESS_RESPONSE = {
     "code": 10000,
     "message": "success",
-    "data": {"id": 789, "name": "test_pod", "status": "RUNNING"}
+    "data": {"id": 789, "name": "test_pod", "status": "RUNNING"},
 }
 
 
@@ -26,8 +26,12 @@ def pod_api():
 
 
 def test_new_pod_minimal_config(pod_api):
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
-        response = pod_api.new_pod(image=VALID_CONFIG["image"], gpu_type=VALID_CONFIG["gpu_type"], gpu_count=1)
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
+        response = pod_api.new_pod(
+            image=VALID_CONFIG["image"], gpu_type=VALID_CONFIG["gpu_type"], gpu_count=1
+        )
         assert response == MOCK_SUCCESS_RESPONSE
         mock_post.assert_called_once()
         payload = mock_post.call_args[0][1]
@@ -47,10 +51,12 @@ def test_new_pod_full_config(pod_api):
         "persistent_volume_in_gb": 10,
         "persistent_mount_path": "/data",
         "initialization_command": "echo 'init'",
-        "environment_vars": [{"key": "TEST", "value": "value"}]
+        "environment_vars": [{"key": "TEST", "value": "value"}],
     }
 
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = pod_api.new_pod(**full_config)
         assert response == MOCK_SUCCESS_RESPONSE
         payload = mock_post.call_args[0][1]
@@ -61,8 +67,13 @@ def test_new_pod_full_config(pod_api):
         assert payload["resourceType"] == full_config["resource_type"]
         assert payload["gpuType"] == full_config["gpu_type"]
         assert payload["gpuCount"] == full_config["gpu_count"]
-        assert payload["minSingleCardVramInGb"] == full_config["min_single_card_vram_in_gb"]
-        assert payload["minSingleCardRamInGb"] == full_config["min_single_card_ram_in_gb"]
+        assert (
+            payload["minSingleCardVramInGb"]
+            == full_config["min_single_card_vram_in_gb"]
+        )
+        assert (
+            payload["minSingleCardRamInGb"] == full_config["min_single_card_ram_in_gb"]
+        )
         assert payload["containerVolumeInGb"] == full_config["container_volume_in_gb"]
         assert payload["persistentVolumeInGb"] == full_config["persistent_volume_in_gb"]
         assert payload["persistentMountPath"] == full_config["persistent_mount_path"]
@@ -82,7 +93,11 @@ def test_new_pod_missing_required_params(pod_api):
 
 
 def test_new_pod_client_error(pod_api):
-    with patch.object(pod_api, 'http_post', side_effect=ClientError(400, 10001, "Invalid parameters", {}, None)):
+    with patch.object(
+        pod_api,
+        "http_post",
+        side_effect=ClientError(400, 10001, "Invalid parameters", {}, None),
+    ):
         with pytest.raises(ClientError) as exc_info:
             pod_api.new_pod(**VALID_CONFIG)
         assert exc_info.value.status_code == 400
@@ -91,19 +106,29 @@ def test_new_pod_client_error(pod_api):
 
 def test_new_pod_with_registry_credentials(pod_api):
     config = {**VALID_CONFIG, "container_registry_auth_id": 12345}
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = pod_api.new_pod(**config)
         assert response == MOCK_SUCCESS_RESPONSE
         payload = mock_post.call_args[0][1]
-        assert payload["containerRegistryAuthId"] == config["container_registry_auth_id"]
+        assert (
+            payload["containerRegistryAuthId"] == config["container_registry_auth_id"]
+        )
 
 
 def test_new_pod_with_exposed_ports(pod_api):
     config = {
         **VALID_CONFIG,
-        "expose": [{"port": 22, "protocol": "SSH"}, {"port": 80, "protocol": "HTTP"}, {"port": 443, "protocol": "HTTPS"}]
+        "expose": [
+            {"port": 22, "protocol": "SSH"},
+            {"port": 80, "protocol": "HTTP"},
+            {"port": 443, "protocol": "HTTPS"},
+        ],
     }
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = pod_api.new_pod(**config)
         assert response == MOCK_SUCCESS_RESPONSE
         payload = mock_post.call_args[0][1]

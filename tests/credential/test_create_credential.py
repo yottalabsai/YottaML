@@ -15,11 +15,15 @@ MOCK_SUCCESS_RESPONSE = {
 
 @pytest.fixture
 def credential_api():
-    return CredentialApi(api_key="test_api_key", base_url="https://api.test.yottalabs.ai")
+    return CredentialApi(
+        api_key="test_api_key", base_url="https://api.test.yottalabs.ai"
+    )
 
 
 def test_create_credential_success(credential_api):
-    with patch.object(credential_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        credential_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = credential_api.create_credential(
             name="Test-Credential",
             type="DOCKER_HUB",
@@ -41,13 +45,21 @@ def test_create_credential_success(credential_api):
 
 def test_create_credential_missing_parameters(credential_api):
     with pytest.raises(ParameterRequiredError):
-        credential_api.create_credential(name=None, type="DOCKER_HUB", username="user", password="pass")
+        credential_api.create_credential(
+            name=None, type="DOCKER_HUB", username="user", password="pass"
+        )
     with pytest.raises(ParameterRequiredError):
-        credential_api.create_credential(name="name", type=None, username="user", password="pass")
+        credential_api.create_credential(
+            name="name", type=None, username="user", password="pass"
+        )
     with pytest.raises(ParameterRequiredError):
-        credential_api.create_credential(name="name", type="DOCKER_HUB", username=None, password="pass")
+        credential_api.create_credential(
+            name="name", type="DOCKER_HUB", username=None, password="pass"
+        )
     with pytest.raises(ParameterRequiredError):
-        credential_api.create_credential(name="name", type="DOCKER_HUB", username="user", password=None)
+        credential_api.create_credential(
+            name="name", type="DOCKER_HUB", username="user", password=None
+        )
 
 
 def test_create_credential_client_error(credential_api):
@@ -58,8 +70,10 @@ def test_create_credential_client_error(credential_api):
     ):
         with pytest.raises(ClientError) as exc_info:
             credential_api.create_credential(
-                name="Test-Credential", type="DOCKER_HUB",
-                username="user", password="pass",
+                name="Test-Credential",
+                type="DOCKER_HUB",
+                username="user",
+                password="pass",
             )
         assert exc_info.value.status_code == 400
         assert exc_info.value.error_code == 20001

@@ -12,14 +12,14 @@ from yottaml.lib.utils import encoded_string
 
 class API(object):
     def __init__(
-            self,
-            api_key=None,
-            base_url=None,
-            timeout=None,
-            proxies=None,
-            debug=False,
-            private_key=None,
-            private_key_pass=None,
+        self,
+        api_key=None,
+        base_url=None,
+        timeout=None,
+        proxies=None,
+        debug=False,
+        private_key=None,
+        private_key_pass=None,
     ):
         self.api_key = api_key
         self.base_url = base_url or "https://api.yottalabs.ai"
@@ -71,8 +71,13 @@ class API(object):
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
-            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
+            self._logger.debug(
+                "params: "
+                + json.dumps({k: v for k, v in params.items() if k != "headers"})
+            )
+            self._logger.debug(
+                "headers: " + json.dumps(dict(params.get("headers", {})))
+            )
 
         response = self.session.get(url=url, **params)
 
@@ -99,8 +104,13 @@ class API(object):
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
-            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
+            self._logger.debug(
+                "params: "
+                + json.dumps({k: v for k, v in params.items() if k != "headers"})
+            )
+            self._logger.debug(
+                "headers: " + json.dumps(dict(params.get("headers", {})))
+            )
 
         response = self.session.post(url=url, json=payload, **params)
 
@@ -127,8 +137,13 @@ class API(object):
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
-            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
+            self._logger.debug(
+                "params: "
+                + json.dumps({k: v for k, v in params.items() if k != "headers"})
+            )
+            self._logger.debug(
+                "headers: " + json.dumps(dict(params.get("headers", {})))
+            )
 
         response = self.session.patch(url=url, json=payload, **params)
 
@@ -156,8 +171,13 @@ class API(object):
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
-            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
+            self._logger.debug(
+                "params: "
+                + json.dumps({k: v for k, v in params.items() if k != "headers"})
+            )
+            self._logger.debug(
+                "headers: " + json.dumps(dict(params.get("headers", {})))
+            )
 
         response = self.session.put(url=url, **params)
 
@@ -185,8 +205,13 @@ class API(object):
         if self.debug:
             self._logger.debug("url: " + url)
             self._logger.debug("payload: " + json.dumps(payload))
-            self._logger.debug("params: " + json.dumps({k: v for k, v in params.items() if k != "headers"}))
-            self._logger.debug("headers: " + json.dumps(dict(params.get("headers", {}))))
+            self._logger.debug(
+                "params: "
+                + json.dumps({k: v for k, v in params.items() if k != "headers"})
+            )
+            self._logger.debug(
+                "headers: " + json.dumps(dict(params.get("headers", {})))
+            )
 
         response = self.session.delete(url=url, **params)
 
@@ -222,6 +247,10 @@ class API(object):
             if "data" in err:
                 error_data = err["data"]
             raise ClientError(
-                status_code, err.get("code"), err.get("message", response.text), response.headers, error_data
+                status_code,
+                err.get("code"),
+                err.get("message", response.text),
+                response.headers,
+                error_data,
             )
         raise ServerError(status_code, response.text)
