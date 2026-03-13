@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - License updated from MIT to Apache 2.0 in `pyproject.toml` and classifier
 - README rewritten to document the full CLI (`pods`, `serverless`, `tasks`, `gpus`, `credentials`) and all SDK classes
 
-## [0.2.0] — 2025-08-19
+## [0.2.0] — 2026-03-12
 
 ### Added
 - v2 API migration: all SDK modules now target `/v2/` endpoints
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `deployments.py` CLI module (replaced by `serverless.py`)
 
-## [0.1.0] — 2025-01-01
+## [0.1.0] — 2025-07-06
 
 ### Added
 - Initial release
