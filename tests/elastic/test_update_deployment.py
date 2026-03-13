@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.elastic import ElasticApi
-from yotta.error import ClientError, ParameterRequiredError
+from yottaml.elastic import ElasticApi
+from yottaml.error import ClientError, ParameterRequiredError
 
 MOCK_UPDATE_RESPONSE = {
     "code": 10000,
@@ -22,7 +22,7 @@ def elastic_api():
     return ElasticApi("key", base_url="https://api.dev.yottalabs.ai")
 
 
-@patch.object(ElasticApi, "http_post")
+@patch.object(ElasticApi, "http_patch")
 def test_update_deployment_success(mock_post, elastic_api):
     mock_post.return_value = MOCK_UPDATE_RESPONSE
 
@@ -52,7 +52,7 @@ def test_update_deployment_success(mock_post, elastic_api):
     path, kwargs = mock_post.call_args[0][0], mock_post.call_args[1]
     payload = kwargs.get("payload", {})
 
-    assert path == "/openapi/v1/elastic/deploy/384414489660887859/update"
+    assert path == "/v2/serverless/384414489660887859"
     assert payload["name"] == "Llama-3.2-3B3"
     assert payload["resources"] == resources
     assert payload["workers"] == 1
@@ -136,7 +136,7 @@ def test_update_deployment_client_error(elastic_api):
 
     with patch.object(
             elastic_api,
-            "http_post",
+            "http_patch",
             side_effect=ClientError(
                 status_code=400,
                 error_code=20002,

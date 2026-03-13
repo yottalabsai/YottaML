@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.elastic import ElasticApi
-from yotta.error import ClientError, ParameterRequiredError
+from yottaml.elastic import ElasticApi
+from yottaml.error import ClientError, ParameterRequiredError
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def test_stop_deployment_success(mock_post, elastic_api):
     resp = elastic_api.stop_deployment(384414489660887859)
 
     mock_post.assert_called_once_with(
-        "/openapi/v1/elastic/deploy/384414489660887859/stop",
+        "/v2/serverless/384414489660887859/stop",
         payload=None,
     )
     assert resp["code"] == 10000
@@ -31,7 +31,7 @@ def test_start_deployment_success(mock_post, elastic_api):
     resp = elastic_api.start_deployment(384414489660887859)
 
     mock_post.assert_called_once_with(
-        "/openapi/v1/elastic/deploy/384414489660887859/start",
+        "/v2/serverless/384414489660887859/start",
         payload=None,
     )
     assert resp["code"] == 10000
@@ -44,7 +44,7 @@ def test_delete_deployment_success(mock_delete, elastic_api):
     resp = elastic_api.delete_deployment(384414489660887859)
 
     mock_delete.assert_called_once_with(
-        "/openapi/v1/elastic/deploy/384414489660887859",
+        "/v2/serverless/384414489660887859",
         payload=None,
     )
     assert resp["code"] == 10000
@@ -57,7 +57,7 @@ def test_delete_deployment_failed_action_not_allowed(mock_delete, elastic_api):
     resp = elastic_api.delete_deployment(384414489660887859)
 
     mock_delete.assert_called_once_with(
-        "/openapi/v1/elastic/deploy/384414489660887859",
+        "/v2/serverless/384414489660887859",
         payload=None,
     )
     assert resp["code"] == 24002

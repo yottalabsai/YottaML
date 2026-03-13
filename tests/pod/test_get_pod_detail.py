@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.error import ClientError
-from yotta.pod import PodApi
+from yottaml.error import ClientError
+from yottaml.pod import PodApi
 
 
 MOCK_DETAIL_RESPONSE = {
@@ -25,7 +25,7 @@ def test_get_pod_detail_success():
 
     with patch.object(client, "http_get", return_value=MOCK_DETAIL_RESPONSE) as mock_get:
         resp = client.get_pod(123)
-        mock_get.assert_called_once_with("/openapi/v1/pods/123")
+        mock_get.assert_called_once_with("/v2/pods/123")
         assert resp["code"] == 10000
         assert resp["data"]["id"] == 123
         assert resp["data"]["podName"] == "demo-pod"

@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.error import ClientError, ParameterRequiredError
-from yotta.pod import PodApi
+from yottaml.error import ClientError, ParameterRequiredError
+from yottaml.pod import PodApi
 
 # Mock response data
 MOCK_SUCCESS_RESPONSE = {
@@ -33,7 +33,7 @@ def test_delete_pod_success(pod_api):
         response = pod_api.delete_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_delete.assert_called_once_with(f"/openapi/v1/pods/{pod_id}", payload=None)
+        mock_delete.assert_called_once_with(f"/v2/pods/{pod_id}", payload=None)
 
 
 def test_delete_pod_success_with_string_id(pod_api):
@@ -44,7 +44,7 @@ def test_delete_pod_success_with_string_id(pod_api):
         response = pod_api.delete_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_delete.assert_called_once_with(f"/openapi/v1/pods/{int(pod_id)}", payload=None)
+        mock_delete.assert_called_once_with(f"/v2/pods/{int(pod_id)}", payload=None)
 
 
 def test_delete_pod_missing_id(pod_api):

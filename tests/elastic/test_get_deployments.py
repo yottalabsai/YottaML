@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from yotta.elastic import ElasticApi
+from yottaml.elastic import ElasticApi
 
 # ------------------------------------------------------
 # Mock dataset used to validate returned `data` field
@@ -44,7 +44,7 @@ def test_get_deployments_with_status(mock_get):
     payload = mock_get.call_args[1].get("payload")
 
     # Verify correct deployment path
-    assert path == "/openapi/v1/elastic/deploy/list"
+    assert path == "/v2/serverless"
 
     # Verify payload contains normalized CSV status list
     assert payload["statusList"] == "RUNNING,STOPPED"

@@ -4,7 +4,7 @@ import uuid
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 
-from yotta.error import (
+from yottaml.error import (
     ParameterRequiredError,
     ParameterValueError,
     ParameterTypeError,

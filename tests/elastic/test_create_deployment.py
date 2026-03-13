@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.elastic import ElasticApi
-from yotta.error import ClientError, ParameterRequiredError
+from yottaml.elastic import ElasticApi
+from yottaml.error import ClientError, ParameterRequiredError
 
 MOCK_CREATE_RESPONSE = {
     "code": 10000,
@@ -55,14 +55,14 @@ def test_create_deployment_success(mock_post, elastic_api):
     path, kwargs = mock_post.call_args[0][0], mock_post.call_args[1]
     payload = kwargs.get("payload", {})
 
-    assert path == "/openapi/v1/elastic/deploy/create"
+    assert path == "/v2/serverless"
     assert payload["name"] == "Llama-3.2-3B"
     assert payload["image"] == "vllm/vllm-openai:latest"
     assert payload["imageRegistry"] == "https://index.docker.io/v1"
     assert payload["resources"] == resources
     assert payload["workers"] == 1
     assert payload["serviceMode"] == "ALB"
-    assert payload["credentialId"] == 361530338086227968
+    assert payload["containerRegistryAuthId"] == 361530338086227968
     assert resp == MOCK_CREATE_RESPONSE
 
 

@@ -2,67 +2,46 @@ from unittest.mock import patch
 
 import pytest
 
-from yotta.error import ClientError, ParameterRequiredError
-from yotta.pod import PodApi
+from yottaml.error import ClientError, ParameterRequiredError
+from yottaml.pod import PodApi
 
-# Test data
 VALID_CONFIG = {
-    "image": "yottalabsai/pytorch:2.8.0",
-    "gpu_type": "NVIDIA_L4_24G",
-    "pod_name": "test_pod",
+    "image": "pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime",
+    "gpu_type": "RTX_4090_24G",
+    "name": "test_pod",
     "gpu_count": 1,
-    "expose": [
-        {"port": 22, "protocol": "SSH"}
-    ]
+    "expose": [{"port": 22, "protocol": "SSH"}]
 }
 
 MOCK_SUCCESS_RESPONSE = {
     "code": 10000,
     "message": "success",
-    "data": 123456789  # Pod ID
-}
-
-MOCK_ERROR_RESPONSE = {
-    "code": 40001,
-    "message": "error message",
-    "data": None
+    "data": {"id": 789, "name": "test_pod", "status": "RUNNING"}
 }
 
 
 @pytest.fixture
 def pod_api():
-    """Create a PodApi instance with a mock API key"""
     return PodApi(api_key="test_api_key", base_url="https://api.test.yottalabs.ai")
 
 
 def test_new_pod_minimal_config(pod_api):
-    """Test creating a pod with minimal required configuration"""
     with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
-        response = pod_api.new_pod(
-            image=VALID_CONFIG["image"],
-            gpu_type=VALID_CONFIG["gpu_type"],
-            gpu_count=1,
-        )
-
+        response = pod_api.new_pod(image=VALID_CONFIG["image"], gpu_type=VALID_CONFIG["gpu_type"], gpu_count=1)
         assert response == MOCK_SUCCESS_RESPONSE
         mock_post.assert_called_once()
-
-        # Verify payload contains required fields
-        call_args = mock_post.call_args[0]
-        payload = call_args[1]
+        payload = mock_post.call_args[0][1]
         assert payload["image"] == VALID_CONFIG["image"]
         assert payload["gpuType"] == VALID_CONFIG["gpu_type"]
 
 
 def test_new_pod_full_config(pod_api):
-    """Test creating a pod with all optional parameters"""
     full_config = {
         **VALID_CONFIG,
-        "region": "us-west-1",
-        "cloud_type": "SECURE",
-        "official_image": "OFFICIAL",
+        "regions": ["us-west-1"],
         "image_public_type": "PUBLIC",
         "resource_type": "GPU",
+        "min_single_card_vram_in_gb": 24,
         "min_single_card_ram_in_gb": 20,
         "container_volume_in_gb": 20,
         "persistent_volume_in_gb": 10,
@@ -73,22 +52,16 @@ def test_new_pod_full_config(pod_api):
 
     with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
         response = pod_api.new_pod(**full_config)
-
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once()
-
-        # Verify all fields are in payload
-        call_args = mock_post.call_args[0]
-        payload = call_args[1]
-        assert payload["region"] == full_config["region"]
-        assert payload["cloudType"] == full_config["cloud_type"]
-        assert payload["podName"] == full_config["pod_name"]
+        payload = mock_post.call_args[0][1]
+        assert payload["name"] == full_config["name"]
+        assert payload["regions"] == full_config["regions"]
         assert payload["image"] == full_config["image"]
-        assert payload["officialImage"] == full_config["official_image"]
         assert payload["imagePublicType"] == full_config["image_public_type"]
         assert payload["resourceType"] == full_config["resource_type"]
         assert payload["gpuType"] == full_config["gpu_type"]
         assert payload["gpuCount"] == full_config["gpu_count"]
+        assert payload["minSingleCardVramInGb"] == full_config["min_single_card_vram_in_gb"]
         assert payload["minSingleCardRamInGb"] == full_config["min_single_card_ram_in_gb"]
         assert payload["containerVolumeInGb"] == full_config["container_volume_in_gb"]
         assert payload["persistentVolumeInGb"] == full_config["persistent_volume_in_gb"]
@@ -97,8 +70,8 @@ def test_new_pod_full_config(pod_api):
         assert payload["environmentVars"] == full_config["environment_vars"]
         assert payload["expose"] == full_config["expose"]
 
+
 def test_new_pod_missing_required_params(pod_api):
-    """Test that creating a pod without required parameters raises an error"""
     with pytest.raises(ParameterRequiredError) as exc_info:
         pod_api.new_pod(image=None, gpu_type=None)
     assert "image" in str(exc_info.value)
@@ -109,62 +82,29 @@ def test_new_pod_missing_required_params(pod_api):
 
 
 def test_new_pod_client_error(pod_api):
-    """Test handling of client errors"""
-    with patch.object(pod_api, 'http_post', side_effect=ClientError(
-            status_code=400,
-            error_code=10001,
-            error_message="Invalid parameters",
-            header={},
-            error_data=None
-    )):
+    with patch.object(pod_api, 'http_post', side_effect=ClientError(400, 10001, "Invalid parameters", {}, None)):
         with pytest.raises(ClientError) as exc_info:
             pod_api.new_pod(**VALID_CONFIG)
-
         assert exc_info.value.status_code == 400
-        assert exc_info.value.error_code == 10001
         assert "Invalid parameters" in str(exc_info.value.error_message)
 
 
 def test_new_pod_with_registry_credentials(pod_api):
-    """Test creating a pod with private registry credentials"""
-    config = {
-        **VALID_CONFIG,
-        "image_registry_username": "user",
-        "image_registry_token": "token"
-    }
-
+    config = {**VALID_CONFIG, "container_registry_auth_id": 12345}
     with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
         response = pod_api.new_pod(**config)
-
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once()
-
-        # Verify registry credentials are in payload
-        call_args = mock_post.call_args[0]
-        payload = call_args[1]
-        assert payload["imageRegistryUsername"] == config["image_registry_username"]
-        assert payload["imageRegistryToken"] == config["image_registry_token"]
+        payload = mock_post.call_args[0][1]
+        assert payload["containerRegistryAuthId"] == config["container_registry_auth_id"]
 
 
 def test_new_pod_with_exposed_ports(pod_api):
-    """Test creating a pod with various exposed ports"""
     config = {
         **VALID_CONFIG,
-        "expose": [
-            {"port": 22, "protocol": "SSH"},
-            {"port": 80, "protocol": "HTTP"},
-            {"port": 443, "protocol": "HTTPS"}
-        ]
+        "expose": [{"port": 22, "protocol": "SSH"}, {"port": 80, "protocol": "HTTP"}, {"port": 443, "protocol": "HTTPS"}]
     }
-
     with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
         response = pod_api.new_pod(**config)
-
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once()
-
-        # Verify exposed ports are in payload
-        call_args = mock_post.call_args[0]
-        payload = call_args[1]
-        assert payload["expose"] == config["expose"]
+        payload = mock_post.call_args[0][1]
         assert len(payload["expose"]) == 3

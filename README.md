@@ -12,13 +12,13 @@ more.
 ## Installation
 
 ```bash
-pip install yottactl
+pip install yottaml
 ```
 
 ## Quickstart
 
 ```python
-from yotta.pod import PodApi
+from yottaml.pod import PodApi
 
 # API key is required for user data endpoints
 client = PodApi(api_key='<api_key>')
@@ -60,7 +60,7 @@ print(response)
 
 Two types of errors are raised:
 
-- `yotta.error.ClientError`  
+- `yottaml.error.ClientError`  
   Raised for 4XX client errors. Properties:
     - `status_code`: HTTP status code
     - `error_code`: Server error code (if available)
@@ -68,7 +68,7 @@ Two types of errors are raised:
     - `header`: Full response headers
     - `error_data`: Additional data (if provided)
 
-- `yotta.error.ServerError`  
+- `yottaml.error.ServerError`  
   Raised for 5XX server errors.
 
 ## Contributing

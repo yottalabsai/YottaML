@@ -3,9 +3,9 @@
 import logging
 
 from examples.utils.prepare_env import get_api_key
-from yotta.error import ClientError
-from yotta.lib.utils import config_logging
-from yotta.credential import CredentialApi
+from yottaml.error import ClientError
+from yottaml.lib.utils import config_logging
+from yottaml.credential import CredentialApi
 
 
 def main():
