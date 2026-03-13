@@ -21,7 +21,7 @@ def create_sample_pod(client, config):
 
         # Check response
         if response['code'] == 10000:
-            logging.info(f"Successfully created pod")
+            logging.info("Successfully created pod")
             logging.info(f"Response message: {response['message']}")
             logging.info(f"New Pod ID: {response['data']}")
             return response['data']

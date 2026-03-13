@@ -1,6 +1,6 @@
 import pytest
 
-from yottaml.error import ParameterTypeError, ParameterValueError
+from yottaml.error import ParameterValueError
 from yottaml.lib.utils import (
     none_to_zero,
     check_gpu_count

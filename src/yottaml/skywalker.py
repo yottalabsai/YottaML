@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse
 
 from yottaml import API
-from yottaml.lib.enums import TaskStatus, ResultSendStatus
+from yottaml.lib.enums import TaskStatus
 from yottaml.lib.utils import (
     check_required_parameter,
     check_is_positive_int,

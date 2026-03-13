@@ -26,10 +26,6 @@ def display_pod_summary(pod):
     """Display a single line summary of pod information"""
     raw_status = pod.get('status')
 
-    # 端口健康统计（容错）
-    expose = pod.get('expose') or []
-    active_ports = sum(1 for p in expose if isinstance(p, dict) and p.get('healthy'))
-    total_ports = len(expose)
 
     logging.info(
         f" {str(pod.get('id','')):10} | "

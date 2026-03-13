@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import argparse
 import logging
 
 from examples.utils.prepare_env import get_api_key
