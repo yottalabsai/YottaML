@@ -1,65 +1,49 @@
-name: Publish Python distributions to PyPI
+name: Publish to PyPI
 
 on:
-  # manually
-  workflow_dispatch:
-
-#  push:
-#    # push tags as v*.*.*
-#    tags:
-#      - "v*.*.*"
-#
-#    # push to main branch
-#    branches:
-#      - main
+  release:
+    types: [published]
 
 jobs:
-  build-n-publish:
-    name: Build and publish distribution 📦 to PyPI
+  build:
+    name: Build distribution
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build
+        run: pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/yottaml
+    permissions:
+      id-token: write  # Required for trusted publishing
 
     steps:
-    # clone
-    - uses: actions/checkout@v4
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
-    # python version
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.x"
-
-    # cache
-    - uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ hashFiles('requirements/requirements.txt') }}
-
-    # install dependencies
-    - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        pip install -r requirements/requirements.txt
-
-    # install build
-    - name: Install pypa/build
-      run: |
-        python3 -m pip install setuptools wheel build --user
-
-    # build
-    - name: Build a binary wheel and a source tarball
-      run: |
-        python3 -m build --sdist --wheel --outdir dist/ .
-
-    # publish
-    - name: Publish distribution 📦 to PyPI
-#      if: startsWith(github.ref, 'refs/tags/')
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
-
-    # clean up
-    - name: Post release cleaning
-      run: |
-        python3 setup.py clean --all
-        rm dist/*
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
