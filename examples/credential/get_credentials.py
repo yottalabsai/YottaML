@@ -21,8 +21,7 @@ def display_credentials_list(credentials):
 
     for cred in credentials:
         logging.info(
-            f" {str(cred.get('id','')):20} | "
-            f"{str(cred.get('name',''))[:30]:<30}"
+            f" {str(cred.get('id', '')):20} | {str(cred.get('name', ''))[:30]:<30}"
         )
 
     logging.info("-" * 60)
@@ -59,5 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

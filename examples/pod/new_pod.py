@@ -20,11 +20,11 @@ def create_sample_pod(client, config):
         response = client.new_pod(**config)
 
         # Check response
-        if response['code'] == 10000:
-            logging.info(f"Successfully created pod")
+        if response["code"] == 10000:
+            logging.info("Successfully created pod")
             logging.info(f"Response message: {response['message']}")
             logging.info(f"New Pod ID: {response['data']}")
-            return response['data']
+            return response["data"]
         else:
             logging.warning(f"Unexpected response code: {response['code']}")
             logging.warning(f"Response message: {response['message']}")
@@ -34,7 +34,9 @@ def create_sample_pod(client, config):
         # Handle client-side errors (4XX status codes)
         logging.error(
             "Client error occurred. Status: %s, Error code: %s, Message: %s",
-            error.status_code, error.error_code, error.error_message
+            error.status_code,
+            error.error_code,
+            error.error_message,
         )
         return None
     except Exception as error:
@@ -61,12 +63,7 @@ def main():
         "resource_type": "GPU",
         "min_single_card_ram_in_gb": 50,
         "gpu_count": 1,
-        "expose": [
-            {
-                "port": 22,
-                "protocol": "SSH"
-            }
-        ]
+        "expose": [{"port": 22, "protocol": "SSH"}],
     }
 
     logging.info("\nCreating basic GPU pod with SSH...")

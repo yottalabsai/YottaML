@@ -6,7 +6,12 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.option("--api-key", envvar="YOTTA_API_KEY", default=None, help="API key (or set YOTTA_API_KEY).")
+@click.option(
+    "--api-key",
+    envvar="YOTTA_API_KEY",
+    default=None,
+    help="API key (or set YOTTA_API_KEY).",
+)
 @click.option(
     "--base-url",
     envvar="YOTTA_BASE_URL",

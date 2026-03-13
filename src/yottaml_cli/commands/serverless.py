@@ -8,7 +8,9 @@ from yottaml.error import ClientError, ServerError
 
 
 def _client(ctx):
-    return ElasticApi(api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"])
+    return ElasticApi(
+        api_key=ctx.obj["api_key"], base_url=ctx.obj["base_url"], debug=ctx.obj["debug"]
+    )
 
 
 def _out(data):
@@ -40,9 +42,13 @@ def serverless():
     type=click.Choice(["ALB", "QUEUE", "CUSTOM"], case_sensitive=True),
     help="Service mode: ALB, QUEUE, or CUSTOM.",
 )
-@click.option("--volume", required=True, type=int, help="Container volume in GB (min 20).")
+@click.option(
+    "--volume", required=True, type=int, help="Container volume in GB (min 20)."
+)
 @click.option("--image-registry", default=None, help="Image registry URL.")
-@click.option("--credential-id", default=None, type=int, help="Container registry credential ID.")
+@click.option(
+    "--credential-id", default=None, type=int, help="Container registry credential ID."
+)
 @click.option("--init-cmd", default=None, help="Initialization command.")
 @click.option(
     "--env",
@@ -52,7 +58,9 @@ def serverless():
 )
 @click.option("--expose-port", default=None, type=int, help="Port to expose.")
 @click.option("--expose-protocol", default=None, help="Expose protocol (e.g. HTTP).")
-@click.option("--webhook", default=None, help="Webhook URL for worker status notifications.")
+@click.option(
+    "--webhook", default=None, help="Webhook URL for worker status notifications."
+)
 @click.pass_context
 def create_deployment(
     ctx,
@@ -82,7 +90,9 @@ def create_deployment(
         env_vars = []
         for item in env:
             if "=" not in item:
-                click.echo(f"Error: --env value must be KEY=VALUE, got: {item!r}", err=True)
+                click.echo(
+                    f"Error: --env value must be KEY=VALUE, got: {item!r}", err=True
+                )
                 sys.exit(1)
             k, v = item.split("=", 1)
             env_vars.append({"name": k, "value": v})
@@ -115,7 +125,9 @@ def create_deployment(
 
 
 @serverless.command("list")
-@click.option("--status", multiple=True, help="Filter by status (repeatable), e.g. RUNNING.")
+@click.option(
+    "--status", multiple=True, help="Filter by status (repeatable), e.g. RUNNING."
+)
 @click.pass_context
 def list_deployments(ctx, status):
     """List serverless deployments."""

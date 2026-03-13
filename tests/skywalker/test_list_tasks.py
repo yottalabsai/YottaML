@@ -75,7 +75,12 @@ def test_list_tasks_query_params(monkeypatch):
             "code": 10000,
             "data": {
                 "items": [],
-                "pagination": {"page": 2, "pageSize": 20, "totalCount": 0, "totalPages": 0},
+                "pagination": {
+                    "page": 2,
+                    "pageSize": 20,
+                    "totalCount": 0,
+                    "totalPages": 0,
+                },
             },
         }
 

@@ -2,7 +2,12 @@ from typing import List, Optional
 
 from yottaml import API
 from yottaml.lib.enums import ResourceType
-from yottaml.lib.utils import check_is_positive_int, none_to_zero, check_gpu_count, clean_none_value
+from yottaml.lib.utils import (
+    check_is_positive_int,
+    none_to_zero,
+    check_gpu_count,
+    clean_none_value,
+)
 from yottaml.lib.utils import check_required_parameter
 from yottaml.lib.utils import check_required_parameters
 
@@ -11,7 +16,9 @@ class PodApi(API):
     def __init__(self, api_key=None, **kwargs):
         super().__init__(api_key, **kwargs)
 
-    def get_pods(self, region_list: list[str] = None, status_list: list[int] = None, **kwargs):
+    def get_pods(
+        self, region_list: list[str] = None, status_list: list[int] = None, **kwargs
+    ):
         """Get Pod list
 
         GET /v2/pods
@@ -54,29 +61,29 @@ class PodApi(API):
         return self.http_delete(f"/v2/pods/{pod_id}", payload=None)
 
     def new_pod(
-            self,
-            image: str,
-            gpu_type: str,
-            name: Optional[str] = None,
-            regions: Optional[List[str]] = None,
-            image_public_type: Optional[str] = None,
-            image_registry: Optional[str] = None,
-            image_registry_username: Optional[str] = None,
-            image_registry_password: Optional[str] = None,
-            container_registry_auth_id: Optional[int] = None,
-            resource_type: Optional[str] = None,
-            gpu_count: Optional[int] = None,
-            min_single_card_vram_in_gb: Optional[int] = None,
-            min_single_card_ram_in_gb: Optional[int] = None,
-            min_single_card_vcpu: Optional[int] = None,
-            shm_in_gb: Optional[int] = None,
-            container_volume_in_gb: Optional[int] = None,
-            persistent_volume_in_gb: Optional[int] = None,
-            persistent_mount_path: Optional[str] = None,
-            initialization_command: Optional[str] = None,
-            environment_vars: Optional[List[dict]] = None,
-            expose: Optional[List[dict]] = None,
-            persistent_volumes: Optional[List[dict]] = None,
+        self,
+        image: str,
+        gpu_type: str,
+        name: Optional[str] = None,
+        regions: Optional[List[str]] = None,
+        image_public_type: Optional[str] = None,
+        image_registry: Optional[str] = None,
+        image_registry_username: Optional[str] = None,
+        image_registry_password: Optional[str] = None,
+        container_registry_auth_id: Optional[int] = None,
+        resource_type: Optional[str] = None,
+        gpu_count: Optional[int] = None,
+        min_single_card_vram_in_gb: Optional[int] = None,
+        min_single_card_ram_in_gb: Optional[int] = None,
+        min_single_card_vcpu: Optional[int] = None,
+        shm_in_gb: Optional[int] = None,
+        container_volume_in_gb: Optional[int] = None,
+        persistent_volume_in_gb: Optional[int] = None,
+        persistent_mount_path: Optional[str] = None,
+        initialization_command: Optional[str] = None,
+        environment_vars: Optional[List[dict]] = None,
+        expose: Optional[List[dict]] = None,
+        persistent_volumes: Optional[List[dict]] = None,
     ):
         """Create a new pod
 
@@ -109,10 +116,12 @@ class PodApi(API):
         Returns:
             Json: Response containing the created pod ID
         """
-        check_required_parameters([
-            [image, "image"],
-            [gpu_type, "gpu_type"],
-        ])
+        check_required_parameters(
+            [
+                [image, "image"],
+                [gpu_type, "gpu_type"],
+            ]
+        )
 
         if resource_type is None or resource_type == ResourceType.GPU.value:
             check_required_parameter(gpu_count, "gpu_count")
@@ -121,30 +130,32 @@ class PodApi(API):
         if none_to_zero(persistent_volume_in_gb, "persistent_volume_in_gb") > 0:
             check_required_parameter(persistent_mount_path, "persistent_mount_path")
 
-        payload = clean_none_value({
-            "name": name,
-            "regions": regions,
-            "image": image,
-            "imageRegistry": image_registry,
-            "imagePublicType": image_public_type,
-            "imageRegistryUsername": image_registry_username,
-            "imageRegistryPassword": image_registry_password,
-            "containerRegistryAuthId": container_registry_auth_id,
-            "resourceType": resource_type,
-            "gpuType": gpu_type,
-            "gpuCount": gpu_count,
-            "minSingleCardVramInGb": min_single_card_vram_in_gb,
-            "minSingleCardRamInGb": min_single_card_ram_in_gb,
-            "minSingleCardVcpu": min_single_card_vcpu,
-            "shmInGb": shm_in_gb,
-            "containerVolumeInGb": container_volume_in_gb,
-            "persistentVolumeInGb": persistent_volume_in_gb,
-            "persistentMountPath": persistent_mount_path,
-            "initializationCommand": initialization_command,
-            "environmentVars": environment_vars,
-            "expose": expose,
-            "persistentVolumes": persistent_volumes,
-        })
+        payload = clean_none_value(
+            {
+                "name": name,
+                "regions": regions,
+                "image": image,
+                "imageRegistry": image_registry,
+                "imagePublicType": image_public_type,
+                "imageRegistryUsername": image_registry_username,
+                "imageRegistryPassword": image_registry_password,
+                "containerRegistryAuthId": container_registry_auth_id,
+                "resourceType": resource_type,
+                "gpuType": gpu_type,
+                "gpuCount": gpu_count,
+                "minSingleCardVramInGb": min_single_card_vram_in_gb,
+                "minSingleCardRamInGb": min_single_card_ram_in_gb,
+                "minSingleCardVcpu": min_single_card_vcpu,
+                "shmInGb": shm_in_gb,
+                "containerVolumeInGb": container_volume_in_gb,
+                "persistentVolumeInGb": persistent_volume_in_gb,
+                "persistentMountPath": persistent_mount_path,
+                "initializationCommand": initialization_command,
+                "environmentVars": environment_vars,
+                "expose": expose,
+                "persistentVolumes": persistent_volumes,
+            }
+        )
 
         return self.http_post("/v2/pods", payload)
 

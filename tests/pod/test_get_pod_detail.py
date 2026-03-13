@@ -15,15 +15,17 @@ MOCK_DETAIL_RESPONSE = {
         "status": "RUNNING",
         "region": "us-west-2",
         "gpuType": "NVIDIA-H100",
-        "gpuCount": 2
-    }
+        "gpuCount": 2,
+    },
 }
 
 
 def test_get_pod_detail_success():
     client = PodApi("dummy", base_url="http://127.0.0.1:8080")
 
-    with patch.object(client, "http_get", return_value=MOCK_DETAIL_RESPONSE) as mock_get:
+    with patch.object(
+        client, "http_get", return_value=MOCK_DETAIL_RESPONSE
+    ) as mock_get:
         resp = client.get_pod(123)
         mock_get.assert_called_once_with("/v2/pods/123")
         assert resp["code"] == 10000
@@ -47,7 +49,9 @@ def test_get_pod_detail_http_error():
 
     # Patch the http_get method to simulate a 404 Not Found response
     # The ClientError constructor requires: (status_code, error_code, error_message, headers, data)
-    with patch.object(client, "http_get", side_effect=ClientError(404, 40400, "Not Found", {}, None)):
+    with patch.object(
+        client, "http_get", side_effect=ClientError(404, 40400, "Not Found", {}, None)
+    ):
         try:
             # This call should raise a ClientError due to the patched side effect
             client.get_pod(999999)
@@ -55,7 +59,9 @@ def test_get_pod_detail_http_error():
             assert False, "Expected ClientError was not raised"
         except ClientError as e:
             # Print exception details for debugging purposes
-            print(f"Caught ClientError: status={e.status_code}, code={e.error_code}, message={e.error_message}")
+            print(
+                f"Caught ClientError: status={e.status_code}, code={e.error_code}, message={e.error_message}"
+            )
 
             # Assert the error properties to make sure the exception is as expected
             assert e.status_code == 404

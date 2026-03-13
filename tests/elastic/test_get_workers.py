@@ -64,5 +64,3 @@ def test_get_workers_without_status_list(mock_get, elastic_api):
     assert path == "/v2/serverless/384414489660887859/workers"
     assert "statusList" not in payload
     assert resp["code"] == 10000
-
-

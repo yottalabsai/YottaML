@@ -1,5 +1,9 @@
 from yottaml import API
-from yottaml.lib.utils import check_required_parameter, check_required_parameters, check_is_positive_int
+from yottaml.lib.utils import (
+    check_required_parameter,
+    check_required_parameters,
+    check_is_positive_int,
+)
 
 
 class CredentialApi(API):
@@ -20,12 +24,14 @@ class CredentialApi(API):
         Returns:
             Json: Response containing the created credential.
         """
-        check_required_parameters([
-            [name, "name"],
-            [type, "type"],
-            [username, "username"],
-            [password, "password"],
-        ])
+        check_required_parameters(
+            [
+                [name, "name"],
+                [type, "type"],
+                [username, "username"],
+                [password, "password"],
+            ]
+        )
 
         payload = {
             "name": name,
@@ -87,7 +93,9 @@ class CredentialApi(API):
         check_required_parameter(credential_id, "credential_id")
         check_is_positive_int(credential_id, "credential_id")
 
-        return self.http_patch(f"/v2/container-registry-auths/{credential_id}", payload=kwargs)
+        return self.http_patch(
+            f"/v2/container-registry-auths/{credential_id}", payload=kwargs
+        )
 
     def delete_credential(self, credential_id: str):
         """Delete a specific credential by ID
@@ -106,4 +114,6 @@ class CredentialApi(API):
         check_required_parameter(credential_id, "credential_id")
         check_is_positive_int(credential_id, "credential_id")
 
-        return self.http_delete(f"/v2/container-registry-auths/{credential_id}", payload=None)
+        return self.http_delete(
+            f"/v2/container-registry-auths/{credential_id}", payload=None
+        )

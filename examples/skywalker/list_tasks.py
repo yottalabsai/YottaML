@@ -88,9 +88,7 @@ def display_task_row(item: dict) -> None:
     created_at = str(item.get("createdAt", ""))
     notify_url = str(item.get("notifyUrl", ""))
 
-    logging.info(
-        f"{user_task_id:<32} | {status:<10} | {created_at:<23} | {notify_url}"
-    )
+    logging.info(f"{user_task_id:<32} | {status:<10} | {created_at:<23} | {notify_url}")
 
 
 def display_task_list(resp: dict) -> None:

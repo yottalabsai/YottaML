@@ -24,9 +24,16 @@ def main():
             for k, v in detail.items():
                 logging.info(f"{k:25}: {v}")
         else:
-            logging.warning("Unexpected code=%s message=%s", resp.get("code"), resp.get("message"))
+            logging.warning(
+                "Unexpected code=%s message=%s", resp.get("code"), resp.get("message")
+            )
     except ClientError as e:
-        logging.error("ClientError: status=%s code=%s message=%s", e.status_code, e.error_code, e.error_message)
+        logging.error(
+            "ClientError: status=%s code=%s message=%s",
+            e.status_code,
+            e.error_code,
+            e.error_message,
+        )
     except Exception as e:
         logging.error("Unexpected error: %s", e)
 

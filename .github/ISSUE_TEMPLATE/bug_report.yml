@@ -1,0 +1,68 @@
+name: Bug Report
+description: Something is not working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal code or commands to reproduce the issue.
+      placeholder: |
+        ```python
+        from yottaml.pod import PodApi
+        client = PodApi(api_key="...")
+        client.get_pod("123")
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include the full error traceback if applicable.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: yottaml version
+      placeholder: "e.g. 0.2.0  (run: pip show yottaml)"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.11.4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other information that might help (OS, environment, etc.)

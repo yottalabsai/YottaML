@@ -6,17 +6,9 @@ from yottaml.error import ClientError, ParameterRequiredError
 from yottaml.pod import PodApi
 
 # Mock response data
-MOCK_SUCCESS_RESPONSE = {
-    "code": 10000,
-    "message": "success",
-    "data": True
-}
+MOCK_SUCCESS_RESPONSE = {"code": 10000, "message": "success", "data": True}
 
-MOCK_ERROR_RESPONSE = {
-    "code": 12000,
-    "message": "Pod not exist",
-    "data": None
-}
+MOCK_ERROR_RESPONSE = {"code": 12000, "message": "Pod not exist", "data": None}
 
 
 @pytest.fixture
@@ -27,9 +19,11 @@ def pod_api():
 
 def test_delete_pod_success(pod_api):
     """Test successful pod deletion"""
-    pod_id = '123456789012345678901234567890'
+    pod_id = "123456789012345678901234567890"
 
-    with patch.object(pod_api, 'http_delete', return_value=MOCK_SUCCESS_RESPONSE) as mock_delete:
+    with patch.object(
+        pod_api, "http_delete", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_delete:
         response = pod_api.delete_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
@@ -40,7 +34,9 @@ def test_delete_pod_success_with_string_id(pod_api):
     """Test successful pod deletion with string ID that can be converted to int"""
     pod_id = "123456789"
 
-    with patch.object(pod_api, 'http_delete', return_value=MOCK_SUCCESS_RESPONSE) as mock_delete:
+    with patch.object(
+        pod_api, "http_delete", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_delete:
         response = pod_api.delete_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
@@ -90,13 +86,17 @@ def test_delete_pod_not_found(pod_api):
     """Test handling of pod not found error"""
     pod_id = 999999999
 
-    with patch.object(pod_api, 'http_delete', side_effect=ClientError(
+    with patch.object(
+        pod_api,
+        "http_delete",
+        side_effect=ClientError(
             status_code=200,
             error_code=12000,
             error_message="Pod not exist",
             header={},
-            error_data=None
-    )):
+            error_data=None,
+        ),
+    ):
         with pytest.raises(ClientError) as exc_info:
             pod_api.delete_pod(pod_id=pod_id)
 
@@ -109,13 +109,17 @@ def test_delete_pod_unauthorized(pod_api):
     """Test handling of unauthorized deletion attempt"""
     pod_id = 123456789
 
-    with patch.object(pod_api, 'http_delete', side_effect=ClientError(
+    with patch.object(
+        pod_api,
+        "http_delete",
+        side_effect=ClientError(
             status_code=200,
             error_code=10004,
             error_message="no permissions",
             header={},
-            error_data=None
-    )):
+            error_data=None,
+        ),
+    ):
         with pytest.raises(ClientError) as exc_info:
             pod_api.delete_pod(pod_id=pod_id)
 
@@ -128,7 +132,9 @@ def test_delete_pod_server_error(pod_api):
     """Test handling of server errors during deletion"""
     pod_id = 123456789
 
-    with patch.object(pod_api, 'http_delete', side_effect=Exception("Internal server error")):
+    with patch.object(
+        pod_api, "http_delete", side_effect=Exception("Internal server error")
+    ):
         with pytest.raises(Exception) as exc_info:
             pod_api.delete_pod(pod_id=pod_id)
 

@@ -20,18 +20,24 @@ MOCK_LIST_RESPONSE = {
 
 @pytest.fixture
 def credential_api():
-    return CredentialApi(api_key="test_api_key", base_url="https://api.test.yottalabs.ai")
+    return CredentialApi(
+        api_key="test_api_key", base_url="https://api.test.yottalabs.ai"
+    )
 
 
 def test_get_credentials_empty_list(credential_api):
-    with patch.object(credential_api, "http_get", return_value=MOCK_EMPTY_RESPONSE) as mock_get:
+    with patch.object(
+        credential_api, "http_get", return_value=MOCK_EMPTY_RESPONSE
+    ) as mock_get:
         response = credential_api.get_credentials()
         assert response == MOCK_EMPTY_RESPONSE
         mock_get.assert_called_once_with("/v2/container-registry-auths", payload={})
 
 
 def test_get_credentials_list(credential_api):
-    with patch.object(credential_api, "http_get", return_value=MOCK_LIST_RESPONSE) as mock_get:
+    with patch.object(
+        credential_api, "http_get", return_value=MOCK_LIST_RESPONSE
+    ) as mock_get:
         response = credential_api.get_credentials()
         assert response == MOCK_LIST_RESPONSE
         assert len(response["data"]) == 2
@@ -40,7 +46,9 @@ def test_get_credentials_list(credential_api):
 
 
 def test_get_credentials_with_kwargs(credential_api):
-    with patch.object(credential_api, "http_get", return_value=MOCK_EMPTY_RESPONSE) as mock_get:
+    with patch.object(
+        credential_api, "http_get", return_value=MOCK_EMPTY_RESPONSE
+    ) as mock_get:
         kwargs = {"page": 1, "size": 10}
         response = credential_api.get_credentials(**kwargs)
         assert response == MOCK_EMPTY_RESPONSE

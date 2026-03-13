@@ -12,7 +12,7 @@ def test_get_deployment_valid(mock_get):
     mock_get.return_value = {
         "code": 10000,
         "message": "success",
-        "data": {"id": 123, "status": "RUNNING"}
+        "data": {"id": 123, "status": "RUNNING"},
     }
 
     api = ElasticApi("key")
@@ -34,7 +34,7 @@ def test_get_deployment_valid(mock_get):
 def test_get_deployment_invalid_id_type():
     api = ElasticApi("key")
     with pytest.raises(ValueError):
-        api.get_deployment_detail("abc")    # must be numeric
+        api.get_deployment_detail("abc")  # must be numeric
 
 
 # ----------------------------------------
@@ -63,7 +63,7 @@ def test_get_deployment_response_passthrough(mock_get):
     expected = {
         "code": 12345,
         "message": "custom",
-        "data": {"id": 999, "extra": "field"}
+        "data": {"id": 999, "extra": "field"},
     }
     mock_get.return_value = expected
 

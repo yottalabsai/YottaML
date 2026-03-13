@@ -1,5 +1,10 @@
 # YottaML
 
+[![PyPI version](https://img.shields.io/pypi/v/yottaml.svg)](https://pypi.org/project/yottaml/)
+[![Python versions](https://img.shields.io/pypi/pyversions/yottaml.svg)](https://pypi.org/project/yottaml/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/yottalabsai/YottaML/actions/workflows/ci.yml/badge.svg)](https://github.com/yottalabsai/YottaML/actions/workflows/ci.yml)
+
 Python SDK and CLI for the [YottaML public API](https://docs.yottalabs.ai).
 
 ## Requirements

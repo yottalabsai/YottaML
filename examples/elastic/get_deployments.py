@@ -22,9 +22,16 @@ def main():
             logging.info("Fetched deployments successfully")
             display_deployment_list(resp)
         else:
-            logging.warning("Unexpected code=%s message=%s", resp.get("code"), resp.get("message"))
+            logging.warning(
+                "Unexpected code=%s message=%s", resp.get("code"), resp.get("message")
+            )
     except ClientError as e:
-        logging.error("ClientError: status=%s code=%s message=%s", e.status_code, e.error_code, e.error_message)
+        logging.error(
+            "ClientError: status=%s code=%s message=%s",
+            e.status_code,
+            e.error_code,
+            e.error_message,
+        )
     except Exception as e:
         logging.error("Unexpected error: %s", e)
 
@@ -39,9 +46,7 @@ def display_deployment_row(item: dict) -> None:
     workers = f"{item.get('runningWorkers')}/{item.get('totalWorkers')}"
 
     # 这里给每一列固定宽度，后面一列对齐一列
-    logging.info(
-        f"{deployment_id:<20} | {name:<28} | {status:<10} | {workers:<9}"
-    )
+    logging.info(f"{deployment_id:<20} | {name:<28} | {status:<10} | {workers:<9}")
 
 
 def display_deployment_list(resp: dict) -> None:
@@ -55,9 +60,7 @@ def display_deployment_list(resp: dict) -> None:
 
     logging.info("\nElastic Deployments:")
     logging.info("-" * 80)
-    logging.info(
-        f"{'id':<20} | {'name':<28} | {'status':<10} | {'workers':<9}"
-    )
+    logging.info(f"{'id':<20} | {'name':<28} | {'status':<10} | {'workers':<9}")
     logging.info("-" * 80)
 
     for item in items:

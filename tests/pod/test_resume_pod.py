@@ -6,11 +6,8 @@ from yottaml.error import ClientError, ParameterRequiredError
 from yottaml.pod import PodApi
 
 # Mock response data
-MOCK_SUCCESS_RESPONSE = {
-    "code": 10000,
-    "message": "success",
-    "data": True
-}
+MOCK_SUCCESS_RESPONSE = {"code": 10000, "message": "success", "data": True}
+
 
 @pytest.fixture
 def pod_api():
@@ -22,7 +19,9 @@ def test_resume_pod_success(pod_api):
     """Test successful pod resume"""
     pod_id = 123456789
 
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = pod_api.resume_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
@@ -33,11 +32,15 @@ def test_resume_pod_success_with_string_id(pod_api):
     """Test successful pod resume with string ID that can be converted to int"""
     pod_id = "123456789"
 
-    with patch.object(pod_api, 'http_post', return_value=MOCK_SUCCESS_RESPONSE) as mock_post:
+    with patch.object(
+        pod_api, "http_post", return_value=MOCK_SUCCESS_RESPONSE
+    ) as mock_post:
         response = pod_api.resume_pod(pod_id=pod_id)
 
         assert response == MOCK_SUCCESS_RESPONSE
-        mock_post.assert_called_once_with(f"/v2/pods/{int(pod_id)}/resume", payload=None)
+        mock_post.assert_called_once_with(
+            f"/v2/pods/{int(pod_id)}/resume", payload=None
+        )
 
 
 def test_resume_pod_missing_id(pod_api):
@@ -53,9 +56,7 @@ def test_resume_pod_missing_id(pod_api):
 
 def test_resume_pod_invalid_id_type(pod_api):
     """Test that resuming a pod with invalid ID type raises an error"""
-    invalid_ids_valueerror = [
-        "abc", "123abc", "pod-123", -123, 0, 1.5, True
-    ]
+    invalid_ids_valueerror = ["abc", "123abc", "pod-123", -123, 0, 1.5, True]
     for invalid_id in invalid_ids_valueerror:
         with pytest.raises(ValueError) as exc_info:
             pod_api.resume_pod(pod_id=invalid_id)
@@ -71,13 +72,17 @@ def test_resume_pod_not_found(pod_api):
     """Test handling of pod not found error on resume"""
     pod_id = 999999999
 
-    with patch.object(pod_api, 'http_post', side_effect=ClientError(
-        status_code=200,
-        error_code=12000,
-        error_message="Pod not exist",
-        header={},
-        error_data=None
-    )):
+    with patch.object(
+        pod_api,
+        "http_post",
+        side_effect=ClientError(
+            status_code=200,
+            error_code=12000,
+            error_message="Pod not exist",
+            header={},
+            error_data=None,
+        ),
+    ):
         with pytest.raises(ClientError) as exc_info:
             pod_api.resume_pod(pod_id=pod_id)
 
@@ -90,13 +95,17 @@ def test_resume_pod_unauthorized(pod_api):
     """Test handling of unauthorized resume attempt"""
     pod_id = 123456789
 
-    with patch.object(pod_api, 'http_post', side_effect=ClientError(
-        status_code=200,
-        error_code=10004,
-        error_message="no permissions",
-        header={},
-        error_data=None
-    )):
+    with patch.object(
+        pod_api,
+        "http_post",
+        side_effect=ClientError(
+            status_code=200,
+            error_code=10004,
+            error_message="no permissions",
+            header={},
+            error_data=None,
+        ),
+    ):
         with pytest.raises(ClientError) as exc_info:
             pod_api.resume_pod(pod_id=pod_id)
 
@@ -109,7 +118,9 @@ def test_resume_pod_server_error(pod_api):
     """Test handling of server errors during resume"""
     pod_id = 123456789
 
-    with patch.object(pod_api, 'http_post', side_effect=Exception("Internal server error")):
+    with patch.object(
+        pod_api, "http_post", side_effect=Exception("Internal server error")
+    ):
         with pytest.raises(Exception) as exc_info:
             pod_api.resume_pod(pod_id=pod_id)
 

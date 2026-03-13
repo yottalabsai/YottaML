@@ -166,15 +166,15 @@ def test_create_deployment_client_error(elastic_api):
     ]
 
     with patch.object(
-            elastic_api,
-            "http_post",
-            side_effect=ClientError(
-                status_code=400,
-                error_code=20001,
-                error_message="Create elastic deployment failed",
-                header={},
-                error_data=None,
-            ),
+        elastic_api,
+        "http_post",
+        side_effect=ClientError(
+            status_code=400,
+            error_code=20001,
+            error_message="Create elastic deployment failed",
+            header={},
+            error_data=None,
+        ),
     ):
         with pytest.raises(ClientError) as exc_info:
             elastic_api.create_deployment(
