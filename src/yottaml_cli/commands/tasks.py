@@ -5,6 +5,7 @@ import click
 
 from yottaml.error import ClientError, ServerError
 from yottaml.skywalker import SkywalkerTaskApi
+from yottaml_cli.formatter import format_output
 
 
 def _client(ctx):
@@ -13,8 +14,8 @@ def _client(ctx):
     )
 
 
-def _out(data):
-    click.echo(json.dumps(data, indent=2))
+def _out(data, fmt):
+    format_output(data, fmt)
 
 
 def _err(e):
@@ -45,7 +46,8 @@ def list_tasks(ctx, endpoint_id, status, page, page_size):
         _out(
             _client(ctx).list_tasks(
                 endpoint_id=endpoint_id, status=status, page=page, page_size=page_size
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)
@@ -58,7 +60,10 @@ def list_tasks(ctx, endpoint_id, status, page, page_size):
 def get_task(ctx, endpoint_id, task_id):
     """Get task details."""
     try:
-        _out(_client(ctx).get_task(endpoint_id=endpoint_id, task_id=task_id))
+        _out(
+            _client(ctx).get_task(endpoint_id=endpoint_id, task_id=task_id),
+            ctx.obj["format"],
+        )
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -69,7 +74,10 @@ def get_task(ctx, endpoint_id, task_id):
 def processing_count(ctx, endpoint_id):
     """Get number of queued and processing tasks."""
     try:
-        _out(_client(ctx).get_processing_count(endpoint_id=endpoint_id))
+        _out(
+            _client(ctx).get_processing_count(endpoint_id=endpoint_id),
+            ctx.obj["format"],
+        )
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -115,7 +123,8 @@ def create_task(
                 input=parsed_input,
                 webhook=webhook,
                 webhook_auth_key=webhook_auth_key,
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)

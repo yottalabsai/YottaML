@@ -1,10 +1,10 @@
-import json
 import sys
 
 import click
 
 from yottaml.credential import CredentialApi
 from yottaml.error import ClientError, ServerError
+from yottaml_cli.formatter import format_output
 
 
 def _client(ctx):
@@ -13,8 +13,8 @@ def _client(ctx):
     )
 
 
-def _out(data):
-    click.echo(json.dumps(data, indent=2))
+def _out(data, fmt):
+    format_output(data, fmt)
 
 
 def _err(e):
@@ -32,7 +32,7 @@ def credentials():
 def list_credentials(ctx):
     """List credentials."""
     try:
-        _out(_client(ctx).get_credentials())
+        _out(_client(ctx).get_credentials(), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -43,7 +43,7 @@ def list_credentials(ctx):
 def get_credential(ctx, credential_id):
     """Get credential details."""
     try:
-        _out(_client(ctx).get_credential(credential_id))
+        _out(_client(ctx).get_credential(credential_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -65,7 +65,8 @@ def create_credential(ctx, name, cred_type, username, password):
         _out(
             _client(ctx).create_credential(
                 name=name, type=cred_type, username=username, password=password
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)
@@ -91,7 +92,9 @@ def update_credential(ctx, credential_id, name, username, password):
         )
         sys.exit(1)
     try:
-        _out(_client(ctx).update_credential(credential_id, **updates))
+        _out(
+            _client(ctx).update_credential(credential_id, **updates), ctx.obj["format"]
+        )
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -102,6 +105,6 @@ def update_credential(ctx, credential_id, name, username, password):
 def delete_credential(ctx, credential_id):
     """Delete a credential."""
     try:
-        _out(_client(ctx).delete_credential(credential_id))
+        _out(_client(ctx).delete_credential(credential_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)

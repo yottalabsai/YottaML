@@ -1,10 +1,10 @@
-import json
 import sys
 
 import click
 
 from yottaml.error import ClientError, ServerError
 from yottaml.gpu import GpuApi
+from yottaml_cli.formatter import format_output
 
 
 def _client(ctx):
@@ -13,8 +13,8 @@ def _client(ctx):
     )
 
 
-def _out(data):
-    click.echo(json.dumps(data, indent=2))
+def _out(data, fmt):
+    format_output(data, fmt)
 
 
 def _err(e):
@@ -32,6 +32,6 @@ def gpus():
 def list_gpus(ctx):
     """List available GPU types."""
     try:
-        _out(_client(ctx).get_gpus())
+        _out(_client(ctx).get_gpus(), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)

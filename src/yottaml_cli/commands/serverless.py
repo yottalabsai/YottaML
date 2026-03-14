@@ -5,6 +5,7 @@ import click
 
 from yottaml.elastic import ElasticApi
 from yottaml.error import ClientError, ServerError
+from yottaml_cli.formatter import format_output
 
 
 def _client(ctx):
@@ -13,8 +14,8 @@ def _client(ctx):
     )
 
 
-def _out(data):
-    click.echo(json.dumps(data, indent=2))
+def _out(data, fmt):
+    format_output(data, fmt)
 
 
 def _err(e):
@@ -118,7 +119,8 @@ def create_deployment(
                 environment_vars=env_vars,
                 expose=expose,
                 webhook=webhook,
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)
@@ -132,7 +134,10 @@ def create_deployment(
 def list_deployments(ctx, status):
     """List serverless deployments."""
     try:
-        _out(_client(ctx).get_deployments(status_list=list(status) or None))
+        _out(
+            _client(ctx).get_deployments(status_list=list(status) or None),
+            ctx.obj["format"],
+        )
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -143,7 +148,7 @@ def list_deployments(ctx, status):
 def get_deployment(ctx, deployment_id):
     """Get deployment details."""
     try:
-        _out(_client(ctx).get_deployment_detail(deployment_id))
+        _out(_client(ctx).get_deployment_detail(deployment_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -154,7 +159,7 @@ def get_deployment(ctx, deployment_id):
 def delete_deployment(ctx, deployment_id):
     """Delete a deployment."""
     try:
-        _out(_client(ctx).delete_deployment(deployment_id))
+        _out(_client(ctx).delete_deployment(deployment_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -165,7 +170,7 @@ def delete_deployment(ctx, deployment_id):
 def start_deployment(ctx, deployment_id):
     """Start a deployment."""
     try:
-        _out(_client(ctx).start_deployment(deployment_id))
+        _out(_client(ctx).start_deployment(deployment_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -176,7 +181,7 @@ def start_deployment(ctx, deployment_id):
 def stop_deployment(ctx, deployment_id):
     """Stop a deployment."""
     try:
-        _out(_client(ctx).stop_deployment(deployment_id))
+        _out(_client(ctx).stop_deployment(deployment_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -188,7 +193,7 @@ def stop_deployment(ctx, deployment_id):
 def scale_deployment(ctx, deployment_id, workers):
     """Scale deployment workers."""
     try:
-        _out(_client(ctx).scale_workers(deployment_id, workers))
+        _out(_client(ctx).scale_workers(deployment_id, workers), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -200,6 +205,9 @@ def scale_deployment(ctx, deployment_id, workers):
 def list_workers(ctx, deployment_id, status):
     """List workers for a deployment."""
     try:
-        _out(_client(ctx).get_workers(deployment_id, status_list=list(status) or None))
+        _out(
+            _client(ctx).get_workers(deployment_id, status_list=list(status) or None),
+            ctx.obj["format"],
+        )
     except (ClientError, ServerError) as e:
         _err(e)

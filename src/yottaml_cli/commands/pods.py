@@ -5,6 +5,7 @@ import click
 
 from yottaml.error import ClientError, ServerError
 from yottaml.pod import PodApi
+from yottaml_cli.formatter import format_output
 
 
 def _client(ctx):
@@ -13,8 +14,8 @@ def _client(ctx):
     )
 
 
-def _out(data):
-    click.echo(json.dumps(data, indent=2))
+def _out(data, fmt):
+    format_output(data, fmt)
 
 
 def _err(e):
@@ -39,7 +40,8 @@ def list_pods(ctx, region, status):
         _out(
             _client(ctx).get_pods(
                 region_list=list(region) or None, status_list=list(status) or None
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)
@@ -51,7 +53,7 @@ def list_pods(ctx, region, status):
 def get_pod(ctx, pod_id):
     """Get pod details."""
     try:
-        _out(_client(ctx).get_pod(pod_id))
+        _out(_client(ctx).get_pod(pod_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -183,7 +185,8 @@ def create_pod(
                 shm_in_gb=shm,
                 environment_vars=env_vars,
                 expose=expose_list,
-            )
+            ),
+            ctx.obj["format"],
         )
     except (ClientError, ServerError) as e:
         _err(e)
@@ -195,7 +198,7 @@ def create_pod(
 def delete_pod(ctx, pod_id):
     """Delete a pod."""
     try:
-        _out(_client(ctx).delete_pod(pod_id))
+        _out(_client(ctx).delete_pod(pod_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -206,7 +209,7 @@ def delete_pod(ctx, pod_id):
 def pause_pod(ctx, pod_id):
     """Pause a running pod."""
     try:
-        _out(_client(ctx).pause_pod(pod_id))
+        _out(_client(ctx).pause_pod(pod_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
 
@@ -217,6 +220,6 @@ def pause_pod(ctx, pod_id):
 def resume_pod(ctx, pod_id):
     """Resume a paused pod."""
     try:
-        _out(_client(ctx).resume_pod(pod_id))
+        _out(_client(ctx).resume_pod(pod_id), ctx.obj["format"])
     except (ClientError, ServerError) as e:
         _err(e)
